@@ -1,0 +1,121 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Discord.Net" Version="3.7.2" />
+		<PackageReference Include="Discord.Net.Core" Version="3.7.2" />
+		<PackageReference Include="Discord.Net.Interactions" Version="3.7.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.4.22229.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.4.22229.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.6.22324.4" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+		<PackageReference Include="Pathoschild.NaturalTimeParser" Version="0.2.0-alpha" />
+		<ProjectReference Include="..\Finder.Database\Finder.Database.csproj" />
+		<ProjectReference Include="..\Finder.Shared\Finder.Shared.csproj" />
+		<EmbeddedResource Update="Resources\TicTacToeLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>TicTacToeLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Main.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Main.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\TicketsLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>TicketsLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\PollLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>PollLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\LevelingLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>LevelingLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\AddonsLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AddonsLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\AdminLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AdminLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\CountdownLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>CountdownLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\EconomyLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>EconomyLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\ModerationLocale.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ModerationLocale.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<Compile Update="Resources\TicTacToeLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>TicTacToe.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Main.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Main.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\TicketsLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Tickets.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\PollLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>PollLocale.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\LevelingLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>LevelingLocale.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\AddonsLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Addons.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\AdminLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AdminLocale.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\CountdownLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>CountdownLocale.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\EconomyLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>EconomyLocale.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\ModerationLocale.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ModerationLocale.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+</Project>

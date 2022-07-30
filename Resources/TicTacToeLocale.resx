@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="TicTacToeError_userBot" xml:space="preserve">
+        <value>The user is a bot.</value>
+    </data>
+    <data name="TicTacToeError_self" xml:space="preserve">
+        <value>You can't play TicTacToe with yourself.</value>
+    </data>
+    <data name="TicTacToeInvite" xml:space="preserve">
+        <value>{0} has been invited to play TicTacToe by {1}!</value>
+    </data>
+    <data name="TicTacToeReady" xml:space="preserve">
+        <value>{0} is ready!</value>
+    </data>
+    <data name="TicTacToeStarting" xml:space="preserve">
+        <value>{0} and {1} are ready!
+Starting game...</value>
+    </data>
+    <data name="TicTacToeEmbed_title" xml:space="preserve">
+        <value>Tic Tac Toe</value>
+    </data>
+    <data name="TicTacToeEmbed_fieldName" xml:space="preserve">
+        <value>The Playing Board</value>
+    </data>
+    <data name="TicTacToeEmbed_fieldValue_wait" xml:space="preserve">
+        <value>Please Wait...</value>
+    </data>
+    <data name="TicTacToeMessage" xml:space="preserve">
+        <value>{0} has been assigned the {1} symbol.
+{2} has been assigned the {3} symbol.
+
+{4}'s Turn!</value>
+    </data>
+    <data name="TicTacToeCancelled" xml:space="preserve">
+        <value>{0} has cancelled game.</value>
+    </data>
+    <data name="TicTacToeWin" xml:space="preserve">
+        <value>{0} has won the game!</value>
+    </data>
+    <data name="TicTacToeDraw" xml:space="preserve">
+        <value>The game has ended in a draw!</value>
+    </data>
+    <data name="TicTacToeConfirm" xml:space="preserve">
+        <value>Both players need to react with ✅ to start the game or ❌ to cancel.</value>
+    </data>
+    <data name="TicTacToeChannelTopic" xml:space="preserve">
+        <value>TicTacToe</value>
+    </data>
+</root>

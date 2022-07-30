@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="EconomyEmbedBal_title" xml:space="preserve">
+        <value>{0}'s balance</value>
+    </data>
+    <data name="EconomyEmbedBal_field0Name" xml:space="preserve">
+        <value>Money</value>
+    </data>
+    <data name="EconomyEmbedBal_field1Name" xml:space="preserve">
+        <value>Bank</value>
+    </data>
+    <data name="EconomyError_notEnoughMoney" xml:space="preserve">
+        <value>You don't have enough money.</value>
+    </data>
+    <data name="EconomyError_notEnoughMoneyBank" xml:space="preserve">
+        <value>You don't have enough money in your bank.</value>
+    </data>
+    <data name="EconomyEmbedDeposit_title" xml:space="preserve">
+        <value>Deposit</value>
+    </data>
+    <data name="EconomyEmbedDeposit_fieldName" xml:space="preserve">
+        <value>You deposited</value>
+    </data>
+    <data name="EconomyEmbedWithdraw_title" xml:space="preserve">
+        <value>Withdraw</value>
+    </data>
+    <data name="EconomyEmbedWithdraw_fieldName" xml:space="preserve">
+        <value>You withdrew</value>
+    </data>
+    <data name="EconomyEmbedPay_title" xml:space="preserve">
+        <value>Pay</value>
+    </data>
+    <data name="EconomyEmbedPay_field0Name" xml:space="preserve">
+        <value>Payee</value>
+    </data>
+    <data name="EconomyEmbedPay_field1Name" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="EconomyEmbedTransfer_title" xml:space="preserve">
+        <value>Transfer</value>
+    </data>
+    <data name="EconomyEmbedTransfer_field0Name" xml:space="preserve">
+        <value>Payee</value>
+    </data>
+    <data name="EconomyEmbedTransfer_field1Name" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="EconomyEmbedSetBal_title" xml:space="preserve">
+        <value>Set Balance</value>
+    </data>
+    <data name="EconomyEmbedSetBal_field1Name" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="EconomyEmbedSetBal_field0Name" xml:space="preserve">
+        <value>User</value>
+    </data>
+</root>
