@@ -16,16 +16,10 @@ namespace Finder.Bot;
 class Program {
     static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
     static async Task RunAsync() {
-        if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
-            Appsettings appsettings = new Appsettings() { ConnectionStrings = new ConnectionStrings() };
-            await using StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json");
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Serialize(file, appsettings);
-        }
-        await using ServiceProvider services = ConfigureServices();
+        IConfiguration configuration = new ConfigurationBuilder().AddJsonFile($"appsettings.json", false, true).Build();
+        await using ServiceProvider services = ConfigureServices(configuration);
         DiscordShardedClient client = services.GetRequiredService<DiscordShardedClient>();
         InteractionService commands = services.GetRequiredService<InteractionService>();
-        IConfiguration config = services.GetRequiredService<IConfiguration>();
         CommandHandler handler = services.GetRequiredService<CommandHandler>();
         await handler.Initialize();
         client.Log += LoggingService.LogAsync;
@@ -37,13 +31,12 @@ class Program {
         client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
         client.ButtonExecuted += new TicketingModule.TicketsModule(services.GetRequiredService<TicketsRepository>()).OnButtonExecutedEvent;
         client.MessageReceived += new LevelingModule(services.GetRequiredService<LevelingRepository>()).OnMessageReceivedEvent;
-        await client.LoginAsync(TokenType.Bot, config["token"]);
+        await client.LoginAsync(TokenType.Bot, configuration["token"]);
         await client.StartAsync();
         await Task.Delay(Timeout.Infinite);
     }
 
-    private static ServiceProvider ConfigureServices() {
-        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build();
+    private static ServiceProvider ConfigureServices(IConfiguration configuration) {
         return new ServiceCollection()
             .AddDbContext<ApplicationContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!, builder => builder.MigrationsAssembly("Finder.Database")), ServiceLifetime.Transient)
             .AddSingleton(configuration)

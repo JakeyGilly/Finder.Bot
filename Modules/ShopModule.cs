@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Finder.Database.Repositories;
 using Finder.Shared;
+using Finder.Shared.Models;
 using Newtonsoft.Json;
 
 namespace Finder.Bot.Modules {
