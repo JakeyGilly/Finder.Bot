@@ -6,6 +6,7 @@ using Finder.Database.Repositories;
 using Finder.Bot.Modules.Helpers;
 using Finder.Bot.Modules.Helpers.Enums;
 using Finder.Bot.Resources;
+using Finder.Database.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 
 namespace Finder.Bot.Modules {
@@ -540,9 +541,9 @@ namespace Finder.Bot.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        if (!(await _settingsRepository.SettingsExists(guild.Id, "muteRoleId"))) {
+                        if (!(await _settingsRepository.SettingExists(guild.Id, "muteRoleId"))) {
                             var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
-                            await _settingsRepository.AddSettingsAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            await _settingsRepository.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
                             await _settingsRepository.SaveAsync();
                             foreach (var _ in guild.Channels) {
                                 await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
@@ -768,9 +769,9 @@ namespace Finder.Bot.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        if (!(await _settingsRepository.SettingsExists(guild.Id, "muteRoleId"))) {
+                        if (!(await _settingsRepository.SettingExists(guild.Id, "muteRoleId"))) {
                             var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
-                            await _settingsRepository.AddSettingsAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            await _settingsRepository.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
                             await _settingsRepository.SaveAsync();
                             foreach (var _ in guild.Channels) {
                                 await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));

@@ -8,6 +8,7 @@ using Finder.Database.DatabaseContexts;
 using Finder.Database.Repositories;
 using Finder.Bot.Handlers;
 using Finder.Bot.Modules.Helpers;
+using Finder.Database.Repositories.Bot;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 

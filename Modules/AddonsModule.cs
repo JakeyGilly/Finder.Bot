@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Finder.Database.Repositories;
 using Finder.Bot.Resources;
+using Finder.Database.Repositories.Bot;
 using Finder.Shared.Enums;
 
 namespace Finder.Bot.Modules {

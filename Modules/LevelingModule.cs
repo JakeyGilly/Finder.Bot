@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Finder.Database.Repositories;
 using Finder.Bot.Resources;
+using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
     [Group("leveling", "Command For Managing Leveling")]

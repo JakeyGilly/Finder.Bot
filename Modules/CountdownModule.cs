@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Finder.Database.Repositories;
 using Finder.Bot.Resources;
+using Finder.Database.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 using System;
 using System.Collections.Generic;
