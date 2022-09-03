@@ -1,26 +1,25 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Database.Repositories;
 using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
    public class PollModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly PollsRepository context;
-        public PollModule(PollsRepository _context) {
-            context = _context;
+        private readonly PollsRepository pollsRepository;
+        public PollModule(PollsRepository _pollsRepository) {
+            pollsRepository = _pollsRepository;
         }
         [SlashCommand("poll", "Create a poll for users to vote on.", runMode: RunMode.Async)]
         public async Task PollCommand(string question, string? answer1 = null, string? answer2 = null, string? answer3 = null, string? answer4 = null, string? answer5 = null, string? answer6 = null, string? answer7 = null, string? answer8 = null, string? answer9 = null, string? answer10 = null,
         string? answer11 = null, string? answer12 = null, string? answer13 = null, string? answer14 = null, string? answer15 = null, string? answer16 = null, string? answer17 = null, string? answer18 = null, string? answer19 = null, string? answer20 = null, string? answer21 = null, string? answer22 = null, 
         string? answer23 = null, string? answer24 = null) {
             ComponentBuilder builder = new ComponentBuilder();
-            var embed = new EmbedBuilder() {
+            var embed = new EmbedBuilder {
                 Title = question,
                 Description = string.Format(PollLocale.PollEmbed_desc, Context.User.Username),
                 Color = Color.Blue,
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             };
@@ -154,12 +153,12 @@ namespace Finder.Bot.Modules {
                 answers.Add(answer24);
             }
             await RespondAsync(Main.EmptyString, embed: embed.Build(), components: builder.Build());
-            await context.AddPollsAsync((await GetOriginalResponseAsync()).Id, answers, new List<long>());
+            await pollsRepository.AddPollsAsync((await GetOriginalResponseAsync()).Id, answers, new List<long>());
         }
         
         public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
-            if (!await context.PollExistsAsync(messageComponent.Message.Id)) return;
-            var poll = await context.GetPollsAsync(messageComponent.Message.Id);
+            if (!await pollsRepository.PollExistsAsync(messageComponent.Message.Id)) return;
+            var poll = await pollsRepository.GetPollsModelAsync(messageComponent.Message.Id);
             for (int i = 0; i < poll.Answers.Count; i++) {
                 if (messageComponent.Data.CustomId != i.ToString()) continue;
                 if (!poll.VotersId.Contains((Int64)messageComponent.User.Id)) {
@@ -169,13 +168,13 @@ namespace Finder.Bot.Modules {
                     var newFields = new List<EmbedFieldBuilder>();
                     for (int j = 0; j < fields.Count(); j++) {
                         if (j == i) {
-                            newFields.Add(new EmbedFieldBuilder() {
+                            newFields.Add(new EmbedFieldBuilder {
                                 Name = fields[j].Name,
                                 Value = int.Parse(fields[j].Value) + 1,
                                 IsInline = fields[j].Inline,
                             });
                         } else {
-                            newFields.Add(new EmbedFieldBuilder() {
+                            newFields.Add(new EmbedFieldBuilder {
                                 Name = fields[j].Name,
                                 Value = fields[j].Value,
                                 IsInline = fields[j].Inline,

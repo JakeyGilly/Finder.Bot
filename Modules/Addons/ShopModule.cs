@@ -1,23 +1,37 @@
 using Discord;
 using Discord.Interactions;
-using Finder.Database.Repositories;
 using Finder.Database.Repositories.Bot;
-using Finder.Shared;
 using Finder.Shared.Models;
 using Newtonsoft.Json;
-
-namespace Finder.Bot.Modules {
+namespace Finder.Bot.Modules.Addons {
+    [DontAutoRegister]
     [Group("shop", "The shop commands to buy items.")]
     public class ShopModule : InteractionModuleBase<ShardedInteractionContext> {
         public static ItemInvRepository itemsRepository;
         public static EconomyRepository economyRepository;
-        public ShopModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository) {
+        public static AddonsRepository addonsRepository;
+        public ShopModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository, AddonsRepository _addonsRepository) {
             itemsRepository = _itemsRepository;
             economyRepository = _economyRepository;
+            addonsRepository = _addonsRepository;
         }
         public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
         [SlashCommand("buy", "Buy an item from the shop.")]
         public async Task BuyCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+                await RespondAsync(embed: new EmbedBuilder {
+                    Title = "Economy",
+                    Description = "This addon is disabled on this server.",
+                    Color = Color.Red,
+                    Fields = new List<EmbedFieldBuilder> {
+                        new EmbedFieldBuilder() {
+                            Name = "Enable",
+                            Value = "Use `/addons install Economy` to enable this addon."
+                        }
+                    }
+                }.Build());
+                return;
+            }
             Guid itemId = Guid.Parse(item);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
@@ -28,7 +42,7 @@ namespace Finder.Bot.Modules {
                 await RespondAsync("This item is not buyable.");
                 return;
             }
-            if ((await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id)).Money < (itemToBuy.BuyPrice * amount)) {
+            if ((await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id)).Money < (itemToBuy.BuyPrice * amount)) {
                 await RespondAsync("You do not have enough money to buy this item.");
                 return;
             }
@@ -37,10 +51,10 @@ namespace Finder.Bot.Modules {
             await economyRepository.SaveAsync();
             await itemsRepository.SaveAsync();
             string amountstr = amount == 0 ? amount.ToString() : "an";
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = $"You have purchased {amountstr} item!",
-                Fields = new List<EmbedFieldBuilder>() {
-                    new EmbedFieldBuilder() {
+                Fields = new List<EmbedFieldBuilder> {
+                    new EmbedFieldBuilder {
                         Name = itemToBuy.Name,
                         Value = "For " + itemToBuy.BuyPrice * amount,
                     }
@@ -51,6 +65,20 @@ namespace Finder.Bot.Modules {
         
         [SlashCommand("sell", "Sell an item to the shop.")]
         public async Task SellCommand([Autocomplete(typeof(InvAutocompleteHandler))] string item, int amount = 1) {
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+                await RespondAsync(embed: new EmbedBuilder {
+                    Title = "Economy",
+                    Description = "This addon is disabled on this server.",
+                    Color = Color.Red,
+                    Fields = new List<EmbedFieldBuilder> {
+                        new EmbedFieldBuilder() {
+                            Name = "Enable",
+                            Value = "Use `/addons install Economy` to enable this addon."
+                        }
+                    }
+                }.Build());
+                return;
+            }
             Guid itemId = Guid.Parse(item);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
@@ -70,10 +98,10 @@ namespace Finder.Bot.Modules {
             await economyRepository.SaveAsync();
             await itemsRepository.SaveAsync();
             string amountstr = amount == 0 ? amount.ToString() : "an";
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = $"You have sold {amountstr} item!",
-                Fields = new List<EmbedFieldBuilder>() {
-                    new EmbedFieldBuilder() {
+                Fields = new List<EmbedFieldBuilder> {
+                    new EmbedFieldBuilder {
                         Name = itemToSell.Name,
                         Value = "For " + itemToSell.SellPrice * amount,
                     }
@@ -84,36 +112,50 @@ namespace Finder.Bot.Modules {
 
         [SlashCommand("info", "Displays item info in the shop")]
         public async Task InfoCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string itemStr) {
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+                await RespondAsync(embed: new EmbedBuilder {
+                    Title = "Economy",
+                    Description = "This addon is disabled on this server.",
+                    Color = Color.Red,
+                    Fields = new List<EmbedFieldBuilder> {
+                        new EmbedFieldBuilder() {
+                            Name = "Enable",
+                            Value = "Use `/addons install Economy` to enable this addon."
+                        }
+                    }
+                }.Build());
+                return;
+            }
             Guid itemId = Guid.Parse(itemStr);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
                 return;
             }
             var item = itemsroot.Items.Find(x => x.Id == itemId);
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = $"{item.Name} infomation",
-                Fields = new List<EmbedFieldBuilder>() {
-                    new EmbedFieldBuilder() {
+                Fields = new List<EmbedFieldBuilder> {
+                    new EmbedFieldBuilder {
                         Name = "Description",
                         Value = item.Description,
                         IsInline = false
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = "Rarity",
                         Value = item.Rarity.ToString(),
                         IsInline = false
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = "Buy Price",
                         Value = item.Buyable ? item.BuyPrice : "Unbuyable",
                         IsInline = true
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = "Sell Price",
                         Value = item.Sellable ? item.SellPrice : "Unsellable",
                         IsInline = true
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = "Tradeable",
                         Value = item.Tradeable ? "Yes" : "No",
                         IsInline = true
@@ -124,20 +166,36 @@ namespace Finder.Bot.Modules {
     }
 
     public class InventoryModule : InteractionModuleBase<ShardedInteractionContext> {
-        public static ItemInvRepository itemsRepository;
-        public InventoryModule(ItemInvRepository _itemsRepository) {
+        private static ItemInvRepository itemsRepository;
+        private static AddonsRepository addonsRepository;
+        public InventoryModule(ItemInvRepository _itemsRepository, AddonsRepository _addonsRepository) {
             itemsRepository = _itemsRepository;
+            addonsRepository = _addonsRepository;
         }
-        public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
+        private static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
 
         [SlashCommand("inventory", "View your inventory.")]
         public async Task InventoryCommand() {
-            var items = await itemsRepository.GetItemsAsync((long)Context.Guild.Id, (long)Context.User.Id);
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+                await RespondAsync(embed: new EmbedBuilder {
+                    Title = "Economy",
+                    Description = "This addon is disabled on this server.",
+                    Color = Color.Red,
+                    Fields = new List<EmbedFieldBuilder> {
+                        new EmbedFieldBuilder() {
+                            Name = "Enable",
+                            Value = "Use `/addons install Economy` to enable this addon."
+                        }
+                    }
+                }.Build());
+                return;
+            }
+            var items = await itemsRepository.GetItemsModelAsync((long)Context.Guild.Id, (long)Context.User.Id);
             if (items == null || items.ItemIds.Count == 0) {
                 await RespondAsync("You do not have any items.");
                 return;
             }
-            var embed = new EmbedBuilder() {
+            var embed = new EmbedBuilder {
                 Title = "Your inventory",
                 Color = Color.Green
             };
@@ -152,7 +210,14 @@ namespace Finder.Bot.Modules {
         }
     }
     public class ShopAutocompleteHandler : AutocompleteHandler {
+        private readonly AddonsRepository addonsRepository;
+        public ShopAutocompleteHandler(AddonsRepository _addonsRepository) {
+            addonsRepository = _addonsRepository;
+        }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
+            if (!await addonsRepository.AddonEnabled(context.Guild.Id, "Economy")) {
+                return AutocompletionResult.FromError(InteractionCommandError.Exception, "Economy is disabled on this server.");
+            }
             IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
             if (ShopModule.itemsroot == null) {
                 return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "Could not load items.");
@@ -163,9 +228,16 @@ namespace Finder.Bot.Modules {
     }
     
     public class InvAutocompleteHandler : AutocompleteHandler {
+        private readonly AddonsRepository addonsRepository;
+        public InvAutocompleteHandler(AddonsRepository _addonsRepository) {
+            addonsRepository = _addonsRepository;
+        }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
+            if (!await addonsRepository.AddonEnabled(context.Guild.Id, "Economy")) {
+                return AutocompletionResult.FromError(InteractionCommandError.Exception, "Economy is disabled on this server.");
+            }
             IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
-            var items = await ShopModule.itemsRepository.GetItemsAsync((long)context.Guild.Id, (long)context.User.Id);
+            var items = await ShopModule.itemsRepository.GetItemsModelAsync((long)context.Guild.Id, (long)context.User.Id);
             if (items == null || items.ItemIds.Count == 0) {
                 return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "You do not have any items.");
             }

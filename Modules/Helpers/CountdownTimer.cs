@@ -27,16 +27,16 @@ public static class CountdownTimer {
             var messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.MessageId);
             if (c.DateTime < DateTime.UtcNow || messages == null) {
                 if (messages != null) {
-                    await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
+                    await messages.ModifyAsync(x => x.Embed = new EmbedBuilder {
                         Title = CountdownLocale.CountdownEmbed_title,
                         Color = Color.Orange,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = CountdownLocale.CountdownEmbed_fieldName,
                                 Value = CountdownLocale.CountdownEmbed_fieldValueEnd
                             }
                         },
-                        Footer = new EmbedFooterBuilder() {
+                        Footer = new EmbedFooterBuilder {
                             Text = Main.EmbedFooter
                         }
                     }.Build());
@@ -65,16 +65,16 @@ public static class CountdownTimer {
                 continue;
             }
             var timeLeft = c.DateTime - DateTime.Now.ToUniversalTime();
-            await messages.ModifyAsync((x => x.Embed = new EmbedBuilder() {
+            await messages.ModifyAsync((x => x.Embed = new EmbedBuilder {
                 Title = CountdownLocale.CountdownEmbed_title,
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = CountdownLocale.CountdownEmbed_fieldName,
                         Value = string.Format(CountdownLocale.CountdownEmbed_fieldValue, CountdownModule.HumanizeTime(timeLeft))
                     }
                 },
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             }.Build()));

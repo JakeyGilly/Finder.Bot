@@ -93,6 +93,12 @@ namespace Finder.Bot.Resources {
             }
         }
         
+        internal static string AddonsError_notFound {
+            get {
+                return ResourceManager.GetString("AddonsError_notFound", resourceCulture);
+            }
+        }
+        
         internal static string AddonsEmbedUninstall_title {
             get {
                 return ResourceManager.GetString("AddonsEmbedUninstall_title", resourceCulture);

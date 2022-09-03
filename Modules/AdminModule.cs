@@ -14,10 +14,10 @@ namespace Finder.Bot.Modules {
             } catch (Exception e) {
                 await ReplyAsync(AdminLocale.AdminError_purge);
             }
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = "Purged",
                 Color = Color.Orange,
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             }.Build());
@@ -30,27 +30,27 @@ namespace Finder.Bot.Modules {
                 return;
             }
             await ((SocketTextChannel)Context.Channel).ModifyAsync(x => x.SlowModeInterval = seconds);
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = AdminLocale.AdminEmbedSlowmode_title,
                 Color = Color.Orange,
                 Fields = {
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = AdminLocale.AdminEmbedSlowmode_field0Name,
                         Value = Context.Channel.Name,
                         IsInline = true
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = AdminLocale.AdminEmbedSlowmode_field1Name,
                         Value = seconds.ToString(),
                         IsInline = true
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = AdminLocale.AdminEmbedSlowmode_field2Name,
                         Value = Context.User.Username,
                         IsInline = true
                     }
                 },
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             }.Build());
@@ -64,22 +64,22 @@ namespace Finder.Bot.Modules {
                     await ((SocketTextChannel)Context.Channel).AddPermissionOverwriteAsync(role, overwrite);
                 }
             }
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = AdminLocale.AdminEmbedLockdown_title,
                 Color = Color.Orange,
                 Fields = {
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = AdminLocale.AdminEmbedLockdown_field0Name,
                         Value = Context.Channel.Name,
                         IsInline = true
                     },
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = AdminLocale.AdminEmbedLockdown_field1Name,
                         Value = Context.User.Username,
                         IsInline = true
                     }
                 },
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             }.Build());

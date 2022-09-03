@@ -1,5 +1,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
+using Finder.Database.Repositories.Bot;
+using Finder.Shared.Enums;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
@@ -9,11 +11,13 @@ namespace Finder.Bot.Handlers {
         private readonly DiscordShardedClient client;
         private readonly IConfiguration config;
         private readonly IServiceProvider services;
-        public CommandHandler(InteractionService _commands, DiscordShardedClient _client, IConfiguration _config, IServiceProvider _services) {
+        private readonly AddonsRepository addonsRepository;
+        public CommandHandler(InteractionService _commands, DiscordShardedClient _client, IConfiguration _config, IServiceProvider _services, AddonsRepository _addonsRepository) {
             commands = _commands;
             client = _client;
             config = _config;
             services = _services;
+            addonsRepository = _addonsRepository;
         }
 
         public async Task Initialize() {
@@ -21,15 +25,15 @@ namespace Finder.Bot.Handlers {
             client.InteractionCreated += InteractionCreated;
             client.ButtonExecuted += ButtonExecuted;
             client.ShardReady += ShardReady;
-            commands.SlashCommandExecuted += commandsSlashCommandExecuted;
-            commands.AutocompleteHandlerExecuted += commandsAutocompleteHandlerExecuted;
+            commands.SlashCommandExecuted += CommandsSlashCommandExecuted;
+            commands.AutocompleteHandlerExecuted += CommandsAutocompleteHandlerExecuted;
         }
 
-        private Task commandsAutocompleteHandlerExecuted(IAutocompleteHandler arg1, Discord.IInteractionContext arg2, IResult arg3) {
+        private Task CommandsAutocompleteHandlerExecuted(IAutocompleteHandler arg1, Discord.IInteractionContext arg2, IResult arg3) {
             return Task.CompletedTask;
         }
 
-        private Task commandsSlashCommandExecuted(SlashCommandInfo arg1, Discord.IInteractionContext arg2, IResult arg3) {
+        private Task CommandsSlashCommandExecuted(SlashCommandInfo arg1, Discord.IInteractionContext arg2, IResult arg3) {
             return Task.CompletedTask;
         }
 
@@ -47,11 +51,9 @@ namespace Finder.Bot.Handlers {
         }
 
         private async Task RegisterCommands() {
-            #if DEBUG
-                await commands.RegisterCommandsToGuildAsync(ulong.Parse(config["testGuild"]), true);
-            #else
-                await commands.RegisterCommandsGloballyAsync(true);
-            #endif
+            foreach (var guild in client.Guilds) {
+                await commands.RegisterCommandsToGuildAsync(guild.Id);
+            }
         }
     }
 }

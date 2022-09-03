@@ -30,17 +30,17 @@ public static class UnBanMuteTimer {
                 await guild.RemoveBanAsync((ulong)c.UserId);
                 try {
                     user = guild.GetUser((ulong)c.UserId);
-                    await user.SendMessageAsync(embed: new EmbedBuilder() {
+                    await user.SendMessageAsync(embed: new EmbedBuilder {
                         Title = ModerationLocale.ModerationEmbedUnbannedDM_title,
                         Color = Color.Red,
-                        Fields = new List<EmbedFieldBuilder>() {
-                            new EmbedFieldBuilder() {
+                        Fields = new List<EmbedFieldBuilder> {
+                            new EmbedFieldBuilder {
                                 Name = ModerationLocale.ModerationEmbed_fieldServerName,
                                 Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
                                 IsInline = false
                             }
                         },
-                        Footer = new EmbedFooterBuilder() {
+                        Footer = new EmbedFooterBuilder {
                             Text = Main.EmbedFooter
                         },
                         ThumbnailUrl = guild.IconUrl
@@ -55,17 +55,17 @@ public static class UnBanMuteTimer {
             if (c.TempMute == null || !(c.TempMute < DateTime.UtcNow)) continue;
             try {
                 user = guild.GetUser((ulong)c.UserId);
-                await user.SendMessageAsync(embed: new EmbedBuilder() {
+                await user.SendMessageAsync(embed: new EmbedBuilder {
                     Title = ModerationLocale.ModerationEmbedUnmutedDM_title,
                     Color = Color.Red,
-                    Fields = new List<EmbedFieldBuilder>() {
-                        new EmbedFieldBuilder() {
+                    Fields = new List<EmbedFieldBuilder> {
+                        new EmbedFieldBuilder {
                             Name = ModerationLocale.ModerationEmbed_fieldServerName,
                             Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
                             IsInline = false
                         }
                     },
-                    Footer = new EmbedFooterBuilder() {
+                    Footer = new EmbedFooterBuilder {
                         Text = Main.EmbedFooter
                     },
                     ThumbnailUrl = guild.IconUrl

@@ -7,6 +7,7 @@ using Finder.Bot.Modules;
 using Finder.Database.DatabaseContexts;
 using Finder.Database.Repositories;
 using Finder.Bot.Handlers;
+using Finder.Bot.Modules.Addons;
 using Finder.Bot.Modules.Helpers;
 using Finder.Database.Repositories.Bot;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +31,8 @@ class Program {
         client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
         client.ReactionAdded += new ModerationModule(services.GetRequiredService<SettingsRepository>(), services.GetRequiredService<UserLogsRepository>()).OnReactionAddedEvent;
         client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
-        client.ButtonExecuted += new TicketingModule.TicketsModule(services.GetRequiredService<TicketsRepository>()).OnButtonExecutedEvent;
-        client.MessageReceived += new LevelingModule(services.GetRequiredService<LevelingRepository>()).OnMessageReceivedEvent;
+        client.ButtonExecuted += new TicketingModule.TicketsModule(services.GetRequiredService<TicketsRepository>(), services.GetRequiredService<AddonsRepository>()).OnButtonExecutedEvent;
+        client.MessageReceived += new LevelingModule(services.GetRequiredService<LevelingRepository>(), services.GetRequiredService<AddonsRepository>()).OnMessageReceivedEvent;
         await client.LoginAsync(TokenType.Bot, configuration["token"]);
         await client.StartAsync();
         await Task.Delay(Timeout.Infinite);

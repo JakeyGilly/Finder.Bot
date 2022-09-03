@@ -34,16 +34,16 @@ namespace Finder.Bot.Modules {
                 await RespondAsync(CountdownLocale.CountdownError_future);
                 return;
             }
-            await RespondAsync(embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder {
                 Title = CountdownLocale.CountdownEmbed_title,
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
-                    new EmbedFieldBuilder() {
+                    new EmbedFieldBuilder {
                         Name = CountdownLocale.CountdownEmbed_fieldName,
                         Value = string.Format(CountdownLocale.CountdownEmbed_fieldValue, timeLeft)
                     }
                 },
-                Footer = new EmbedFooterBuilder() {
+                Footer = new EmbedFooterBuilder {
                     Text = Main.EmbedFooter
                 }
             }.Build());

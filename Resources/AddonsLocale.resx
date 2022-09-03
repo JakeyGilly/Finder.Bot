@@ -37,10 +37,13 @@
         <value>`{0}`</value>
     </data>
     <data name="AddonsError_alreadyInstalled" xml:space="preserve">
-        <value>Addon already installed</value>
+        <value>Error: Addon already installed</value>
     </data>
     <data name="AddonsError_notInstalled" xml:space="preserve">
-        <value>Addon not installed</value>
+        <value>Error: Addon not installed</value>
+    </data>
+    <data name="AddonsError_notFound" xml:space="preserve">
+        <value>Error: Addon not found</value>
     </data>
     <data name="AddonsEmbedUninstall_title" xml:space="preserve">
         <value>Addon Uninstalled</value>
