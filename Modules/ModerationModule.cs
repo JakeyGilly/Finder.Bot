@@ -15,11 +15,7 @@ namespace Finder.Bot.Modules {
             _settingsRepository = settingsRepository;
             _userLogsRepository = userLogsRepository;
         }
-        
-        // todo: permissions
-
         private static readonly List<ModerationMessage> ModerationMessages = new List<ModerationMessage>();
-
         [SlashCommand("ban", "Bans a user from the server.", runMode: RunMode.Async)]
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {

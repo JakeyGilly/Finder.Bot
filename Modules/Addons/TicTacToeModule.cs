@@ -4,9 +4,6 @@ using Discord.Rest;
 using Discord.WebSocket;
 using Finder.Database.Repositories.Bot;
 namespace Finder.Bot.Modules.Addons {
-    // TODO:
-    // delete channel after
-    // check win conditions
     public class TicTacToeModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly AddonsRepository addonsRepository;
         public TicTacToeModule(AddonsRepository _addonsRepository) {

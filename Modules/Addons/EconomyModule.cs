@@ -4,7 +4,6 @@ using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules.Addons {
     public class EconomyModule : InteractionModuleBase<ShardedInteractionContext> {
-        // todo: permissions
         private readonly EconomyRepository economyRepository;
         private readonly AddonsRepository addonsRepository;
         public EconomyModule(EconomyRepository _economyRepository, AddonsRepository _addonsRepository) {

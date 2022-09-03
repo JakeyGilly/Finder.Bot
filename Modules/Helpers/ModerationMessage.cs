@@ -11,5 +11,4 @@ public class ModerationMessage {
     public string reason { get; set; } = "No reason given.";
     public DateTime? time { get; set; } = null;
     public ModerationMessageType Type { get; set; }
-    // add date?
 }
