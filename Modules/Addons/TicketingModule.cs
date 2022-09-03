@@ -4,8 +4,8 @@ using Discord.WebSocket;
 using Finder.Bot.Resources;
 using Finder.Database.Models.Bot;
 using Finder.Database.Repositories.Bot;
+
 namespace Finder.Bot.Modules.Addons {
-    [DontAutoRegister]
     public class TicketingModule {
         [Group("tickets", "Command For Managing Tickets")]
         public class TicketsModule : InteractionModuleBase<ShardedInteractionContext> {

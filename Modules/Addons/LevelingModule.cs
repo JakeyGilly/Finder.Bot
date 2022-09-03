@@ -3,20 +3,20 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
+
 namespace Finder.Bot.Modules.Addons {
-    [DontAutoRegister]
     [Group("leveling", "Command For Managing Leveling")]
     public class LevelingModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly LevelingRepository _levelingRepository;
-        private readonly AddonsRepository _addonsRepository;
-        public LevelingModule(LevelingRepository levelingRepository, AddonsRepository addonsRepository) {
-            _levelingRepository = levelingRepository;
-            _addonsRepository = addonsRepository;
+        private readonly LevelingRepository levelingRepository;
+        private readonly AddonsRepository addonsRepository;
+        public LevelingModule(LevelingRepository _levelingRepository, AddonsRepository _addonsRepository) {
+            levelingRepository = _levelingRepository;
+            addonsRepository = _addonsRepository;
         }
 
         [SlashCommand("level", "Get your current level", runMode: RunMode.Async)]
         public async Task LevelCommand() {
-            if (!await _addonsRepository.AddonEnabled(Context.Guild.Id, "Leveling")) {
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Leveling")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Leveling",
                     Description = "This addon is disabled on this server.",
@@ -30,7 +30,7 @@ namespace Finder.Bot.Modules.Addons {
                 }.Build());
                 return;
             }
-            var levels = await _levelingRepository.GetLevelingModelAsync(((SocketGuildUser)Context.User).Guild.Id, Context.User.Id);
+            var levels = await levelingRepository.GetLevelingModelAsync(((SocketGuildUser)Context.User).Guild.Id, Context.User.Id);
             await RespondAsync(embed: new EmbedBuilder {
                 Title = LevelingLocale.LevelingEmbedLevel_title,
                 Color = Color.Orange,
@@ -51,14 +51,12 @@ namespace Finder.Bot.Modules.Addons {
         }
         
         public async Task OnMessageReceivedEvent(SocketMessage message) {
-            if (!await _addonsRepository.AddonEnabled(Context.Guild.Id, "Leveling")) {
-                return;
-            }
+            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Leveling")) return;
             if (message.Author.IsBot) return;
-            var levels = await _levelingRepository.GetLevelingModelAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id);
+            var levels = await levelingRepository.GetLevelingModelAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id);
             var expToGet = 50 * (int)Math.Pow(1.5, levels.Level + 1);
             if (++levels.Exp > expToGet) {
-                await _levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, 0);
+                await levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, 0);
                 await message.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = string.Format(LevelingLocale.LevelingEmbedLvlUp_title, message.Author.Username),
                     Color = Color.Orange,
@@ -73,7 +71,7 @@ namespace Finder.Bot.Modules.Addons {
                     }
                 }.Build());
             } else {
-                await _levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, levels.Exp);
+                await levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, levels.Exp);
             }
         }
     }

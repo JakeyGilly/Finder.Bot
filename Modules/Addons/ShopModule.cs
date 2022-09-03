@@ -3,19 +3,19 @@ using Discord.Interactions;
 using Finder.Database.Repositories.Bot;
 using Finder.Shared.Models;
 using Newtonsoft.Json;
+
 namespace Finder.Bot.Modules.Addons {
-    [DontAutoRegister]
     [Group("shop", "The shop commands to buy items.")]
     public class ShopModule : InteractionModuleBase<ShardedInteractionContext> {
-        public static ItemInvRepository itemsRepository;
-        public static EconomyRepository economyRepository;
-        public static AddonsRepository addonsRepository;
+        private readonly ItemInvRepository itemsRepository;
+        private readonly EconomyRepository economyRepository;
+        private readonly AddonsRepository addonsRepository;
+        public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
         public ShopModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository, AddonsRepository _addonsRepository) {
             itemsRepository = _itemsRepository;
             economyRepository = _economyRepository;
             addonsRepository = _addonsRepository;
         }
-        public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
         [SlashCommand("buy", "Buy an item from the shop.")]
         public async Task BuyCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
             if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
@@ -166,14 +166,12 @@ namespace Finder.Bot.Modules.Addons {
     }
 
     public class InventoryModule : InteractionModuleBase<ShardedInteractionContext> {
-        private static ItemInvRepository itemsRepository;
-        private static AddonsRepository addonsRepository;
+        private readonly ItemInvRepository itemsRepository;
+        private readonly AddonsRepository addonsRepository;
         public InventoryModule(ItemInvRepository _itemsRepository, AddonsRepository _addonsRepository) {
             itemsRepository = _itemsRepository;
             addonsRepository = _addonsRepository;
         }
-        private static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
-
         [SlashCommand("inventory", "View your inventory.")]
         public async Task InventoryCommand() {
             if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
@@ -200,7 +198,7 @@ namespace Finder.Bot.Modules.Addons {
                 Color = Color.Green
             };
             foreach (var item in items.ItemIds) {
-                var itemToBuy = itemsroot.Items.Find(x => x.Id == item);
+                var itemToBuy = ShopModule.itemsroot.Items.Find(x => x.Id == item);
                 var amount = items.ItemIds.Count(x => x == item);
                 if (embed.Fields.Find(x => x.Name.Substring(0, itemToBuy.Name.Length) == itemToBuy.Name) == null) {
                     embed.AddField(itemToBuy.Name + " x" + amount, itemToBuy.Description);
@@ -229,15 +227,17 @@ namespace Finder.Bot.Modules.Addons {
     
     public class InvAutocompleteHandler : AutocompleteHandler {
         private readonly AddonsRepository addonsRepository;
-        public InvAutocompleteHandler(AddonsRepository _addonsRepository) {
+        private readonly ItemInvRepository itemsRepository;
+        public InvAutocompleteHandler(AddonsRepository _addonsRepository, ItemInvRepository _itemsRepository) {
             addonsRepository = _addonsRepository;
+            itemsRepository = _itemsRepository;
         }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
             if (!await addonsRepository.AddonEnabled(context.Guild.Id, "Economy")) {
                 return AutocompletionResult.FromError(InteractionCommandError.Exception, "Economy is disabled on this server.");
             }
             IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
-            var items = await ShopModule.itemsRepository.GetItemsModelAsync((long)context.Guild.Id, (long)context.User.Id);
+            var items = await itemsRepository.GetItemsModelAsync((long)context.Guild.Id, (long)context.User.Id);
             if (items == null || items.ItemIds.Count == 0) {
                 return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "You do not have any items.");
             }

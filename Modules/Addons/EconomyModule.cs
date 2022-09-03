@@ -2,8 +2,8 @@ using Discord;
 using Discord.Interactions;
 using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
+
 namespace Finder.Bot.Modules.Addons {
-    [DontAutoRegister]
     public class EconomyModule : InteractionModuleBase<ShardedInteractionContext> {
         // todo: permissions
         private readonly EconomyRepository economyRepository;
