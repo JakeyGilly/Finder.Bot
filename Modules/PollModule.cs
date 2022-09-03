@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
@@ -17,20 +16,20 @@ namespace Finder.Bot.Modules {
             ComponentBuilder builder = new ComponentBuilder();
             var embed = new EmbedBuilder {
                 Title = question,
-                Description = string.Format(PollLocale.PollEmbed_desc, Context.User.Username),
+                Description = $"Poll created by {Context.User.Username}",
                 Color = Color.Blue,
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             };
             List<string> answers = new List<string>();
             if (answer1 == null && answer2 == null && answer3 == null && answer4 == null && answer5 == null && answer6 == null && answer7 == null && answer8 == null && answer9 == null && answer10 == null && answer11 == null && answer12 == null && answer13 == null && answer14 == null && answer15 == null && answer16 == null && answer17 == null && answer18 == null && answer19 == null && answer20 == null && answer21 == null && answer22 == null && answer23 == null && answer24 == null) {
-                embed.AddField(PollLocale.PollDefaultOption1, 0, true);
-                builder.WithButton(PollLocale.PollDefaultOption1, "0");
-                answers.Add(PollLocale.PollDefaultOption1);
-                embed.AddField(PollLocale.PollDefaultOption2, 0, true);
-                builder.WithButton(PollLocale.PollDefaultOption2, "1");
-                answers.Add(PollLocale.PollDefaultOption2);
+                embed.AddField("Yes", 0, true);
+                builder.WithButton("Yes", "0");
+                answers.Add("Yes");
+                embed.AddField("No", 0, true);
+                builder.WithButton("No", "1");
+                answers.Add("No");
             }
             if (answer1 != null) {
                 embed.AddField(answer1, 0, true);
@@ -152,7 +151,7 @@ namespace Finder.Bot.Modules {
                 builder.WithButton(answer24, "23");
                 answers.Add(answer24);
             }
-            await RespondAsync(Main.EmptyString, embed: embed.Build(), components: builder.Build());
+            await RespondAsync("", embed: embed.Build(), components: builder.Build());
             await pollsRepository.AddPollsAsync((await GetOriginalResponseAsync()).Id, answers, new List<long>());
         }
         
@@ -186,14 +185,14 @@ namespace Finder.Bot.Modules {
                         newEmbed.WithTitle(embed.Title);
                         newEmbed.WithDescription(embed.Description);
                         newEmbed.WithColor(Color.Blue);
-                        newEmbed.WithFooter(new EmbedFooterBuilder().WithText(Main.EmbedFooter));
+                        newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
                         newEmbed.WithFields(newFields);
                         x.Embed = newEmbed.Build();
                     });
-                    await messageComponent.RespondAsync(PollLocale.PollVoted + poll.Answers[i], ephemeral: true);
+                    await messageComponent.RespondAsync("You voted for " + poll.Answers[i], ephemeral: true);
                     poll.VotersId.Add((Int64)messageComponent.User.Id);
                 } else {
-                    await messageComponent.RespondAsync(PollLocale.PollError_alreadyVoted, ephemeral: true);
+                    await messageComponent.RespondAsync("You already voted on this poll", ephemeral: true);
                 }
             }
         }

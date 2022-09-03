@@ -1,14 +1,9 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Database.Repositories;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Finder.Bot.Modules {
     public class CountdownModule : InteractionModuleBase<ShardedInteractionContext> {
@@ -22,29 +17,29 @@ namespace Finder.Bot.Modules {
             try {
                 date = DateTime.Now.Offset(datetime);
             } catch (TimeParseFormatException) {
-                await RespondAsync(CountdownLocale.CountdownError_invalid);
+                await RespondAsync("Invalid date or time");
                 return;
             }
             var timeLeft = date - DateTime.Now;
             if (timeLeft.TotalSeconds < 0) {
-                await RespondAsync(CountdownLocale.CountdownError_past);
+                await RespondAsync("Date or time is in the past");
                 return;
             }
             if (timeLeft.TotalDays > 365) {
-                await RespondAsync(CountdownLocale.CountdownError_future);
+                await RespondAsync("The date or time is too far in the future");
                 return;
             }
             await RespondAsync(embed: new EmbedBuilder {
-                Title = CountdownLocale.CountdownEmbed_title,
+                Title = "Countdown",
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = CountdownLocale.CountdownEmbed_fieldName,
-                        Value = string.Format(CountdownLocale.CountdownEmbed_fieldValue, timeLeft)
+                        Name = "Time left",
+                        Value = $"{timeLeft} left"
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var messages = await GetOriginalResponseAsync();
@@ -57,7 +52,7 @@ namespace Finder.Bot.Modules {
                         await countdownRepository.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), user.Id, null);
                         break;
                     default:
-                        await RespondAsync(CountdownLocale.CountdownError_ping);
+                        await RespondAsync("Invalid mention");
                         break;
                 }
             } else {
@@ -69,20 +64,20 @@ namespace Finder.Bot.Modules {
         public static string HumanizeTime(TimeSpan time) {
             var sb = new StringBuilder();
             switch(time) {
-                case { Days: > 0 } t:
-                    sb.AppendFormat(CountdownLocale.CountdownDays, time.Days, (time.Days == 1 ? CountdownLocale.CountdownSingular : CountdownLocale.CountdownPlural));
+                case { Days: > 0 }:
+                    sb.Append($"{time.Days} {(time.Days == 1 ? "day" : "days")}");
                     break;
-                case { Hours: > 0 } t:
-                    if (sb.Length != 0) sb.Append(CountdownLocale.CountdownSeperator);
-                    sb.AppendFormat(CountdownLocale.CountdownHours, time.Hours, (time.Hours == 1 ? CountdownLocale.CountdownSingular : CountdownLocale.CountdownPlural));
+                case { Hours: > 0 }:
+                    if (sb.Length != 0) sb.Append(", ");
+                    sb.Append($"{time.Hours} {(time.Hours == 1 ? "hour" : "hours")}");
                     break;
-                case { Minutes: > 0 } t:
-                    if (sb.Length != 0) sb.Append(CountdownLocale.CountdownSeperator);
-                    sb.AppendFormat(CountdownLocale.CountdownMins, time.Minutes, (time.Minutes == 1 ? CountdownLocale.CountdownSingular : CountdownLocale.CountdownPlural));
+                case { Minutes: > 0 }:
+                    if (sb.Length != 0) sb.Append(", ");
+                    sb.Append($"{time.Minutes} {(time.Minutes == 1 ? "minute" : "minutes")}");
                     break;
-                case { Seconds: > 0 } t:
-                    if (sb.Length != 0) sb.Append(CountdownLocale.CountdownSeperator);
-                    sb.AppendFormat(CountdownLocale.CountdownSecs, time.Seconds, (time.Seconds == 1 ? CountdownLocale.CountdownSingular : CountdownLocale.CountdownPlural));
+                case { Seconds: > 0 }:
+                    if (sb.Length != 0) sb.Append(", ");
+                    sb.Append($"{time.Seconds} {(time.Seconds == 1 ? "second" : "seconds")}");
                     break;
             }
             return sb.ToString();

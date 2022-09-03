@@ -24,7 +24,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -71,7 +71,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -118,7 +118,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -180,7 +180,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }

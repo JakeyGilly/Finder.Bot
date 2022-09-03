@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules.Addons {
@@ -22,7 +21,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Leveling` to enable this addon."
                         }
@@ -32,20 +31,20 @@ namespace Finder.Bot.Modules.Addons {
             }
             var levels = await levelingRepository.GetLevelingModelAsync(((SocketGuildUser)Context.User).Guild.Id, Context.User.Id);
             await RespondAsync(embed: new EmbedBuilder {
-                Title = LevelingLocale.LevelingEmbedLevel_title,
+                Title = "Level",
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = LevelingLocale.LevelingEmbedLevel_field0Name,
+                        Name = "Level",
                         Value = levels.Level.ToString()
                     },
                     new EmbedFieldBuilder {
-                        Name = LevelingLocale.LevelingEmbedLevel_field1Name,
+                        Name = "Exp",
                         Value = levels.Exp.ToString()
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
         }
@@ -58,16 +57,16 @@ namespace Finder.Bot.Modules.Addons {
             if (++levels.Exp > expToGet) {
                 await levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, 0);
                 await message.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = string.Format(LevelingLocale.LevelingEmbedLvlUp_title, message.Author.Username),
+                    Title = $"Level Up {message.Author.Username}",
                     Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = LevelingLocale.LevelingEmbedLvlUp_fieldName,
+                            Name = "You have leveled up to level",
                             Value = levels.Level + 1
                         }
                     },
                     Footer = new EmbedFooterBuilder {
-                        Text = Main.EmbedFooter
+                        Text = "FinderBot"
                     }
                 }.Build());
             } else {

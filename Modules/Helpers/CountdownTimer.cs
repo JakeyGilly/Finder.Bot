@@ -1,7 +1,5 @@
 using Discord;
 using Discord.WebSocket;
-using Finder.Database.Repositories;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 using System.Timers;
 
@@ -28,16 +26,16 @@ public static class CountdownTimer {
             if (c.DateTime < DateTime.UtcNow || messages == null) {
                 if (messages != null) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder {
-                        Title = CountdownLocale.CountdownEmbed_title,
+                        Title = "Countdown",
                         Color = Color.Orange,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
-                                Name = CountdownLocale.CountdownEmbed_fieldName,
-                                Value = CountdownLocale.CountdownEmbed_fieldValueEnd
+                                Name = "Time left",
+                                Value = "Countdown has ended"
                             }
                         },
                         Footer = new EmbedFooterBuilder {
-                            Text = Main.EmbedFooter
+                            Text = "FinderBot"
                         }
                     }.Build());
                     var userId = c.PingUserId;
@@ -56,7 +54,7 @@ public static class CountdownTimer {
                             // ignored
                         }
                         if (user != null || role != null) {
-                            await channel.SendMessageAsync(string.Format(CountdownLocale.CountdownPing, user?.Mention ?? role?.Mention));
+                            await channel.SendMessageAsync(user?.Mention ?? role?.Mention);
                         }
                     }
                 }
@@ -65,19 +63,19 @@ public static class CountdownTimer {
                 continue;
             }
             var timeLeft = c.DateTime - DateTime.Now.ToUniversalTime();
-            await messages.ModifyAsync((x => x.Embed = new EmbedBuilder {
-                Title = CountdownLocale.CountdownEmbed_title,
+            await messages.ModifyAsync(x => x.Embed = new EmbedBuilder {
+                Title = "Countdown",
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = CountdownLocale.CountdownEmbed_fieldName,
-                        Value = string.Format(CountdownLocale.CountdownEmbed_fieldValue, CountdownModule.HumanizeTime(timeLeft))
+                        Name = "Time left",
+                        Value = CountdownModule.HumanizeTime(timeLeft)
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
-            }.Build()));
+            }.Build());
         }
     }
 }

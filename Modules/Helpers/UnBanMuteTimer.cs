@@ -1,7 +1,5 @@
 using Discord;
 using Discord.WebSocket;
-using Finder.Database.Repositories;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 using System.Timers;
 
@@ -31,17 +29,17 @@ public static class UnBanMuteTimer {
                 try {
                     user = guild.GetUser((ulong)c.UserId);
                     await user.SendMessageAsync(embed: new EmbedBuilder {
-                        Title = ModerationLocale.ModerationEmbedUnbannedDM_title,
+                        Title = "You have been unbanned",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
-                                Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                Name = "Server",
+                                Value = $"{guild.Name}",
                                 IsInline = false
                             }
                         },
                         Footer = new EmbedFooterBuilder {
-                            Text = Main.EmbedFooter
+                            Text = "FinderBot"
                         },
                         ThumbnailUrl = guild.IconUrl
                     }.Build());
@@ -56,17 +54,17 @@ public static class UnBanMuteTimer {
             try {
                 user = guild.GetUser((ulong)c.UserId);
                 await user.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = ModerationLocale.ModerationEmbedUnmutedDM_title,
+                    Title = "You have been Unmuted",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                            Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                            Name = "Server",
+                            Value = $"{guild.Name}",
                             IsInline = false
                         }
                     },
                     Footer = new EmbedFooterBuilder {
-                        Text = Main.EmbedFooter
+                        Text = "FinderBot"
                     },
                     ThumbnailUrl = guild.IconUrl
                 }.Build());

@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Bot.Resources;
 using Finder.Database.Models.Bot;
 using Finder.Database.Repositories.Bot;
 
@@ -24,7 +23,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -33,49 +32,51 @@ namespace Finder.Bot.Modules.Addons {
                     return;
                 }
                 if (name == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_noName);
+                    await RespondAsync("Please specify a name for the ticket.");
                     return;
                 }
                 if (name.Length > 32) {
-                    await RespondAsync(TicketsLocale.TicketsError_nameTooLong);
+                    await RespondAsync("The name of the ticket is too long.");
                     return;
                 }
-                var supportChannel = await Context.Guild.CreateTextChannelAsync(TicketsLocale.TicketsPrefix);
-                await supportChannel.AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(
-                    addReactions: PermValue.Allow,
-                    attachFiles: PermValue.Allow,
-                    embedLinks: PermValue.Allow,
-                    readMessageHistory: PermValue.Allow,
-                    sendMessages: PermValue.Allow,
-                    viewChannel: PermValue.Allow,
-                    useApplicationCommands: PermValue.Allow
-                ));
-                await supportChannel.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, new OverwritePermissions(
-                    readMessageHistory: PermValue.Deny,
-                    sendMessages: PermValue.Deny,
-                    viewChannel: PermValue.Deny
-                ));
-                var components = new ComponentBuilder()
-                    .WithButton(TicketsLocale.TicketsButton_closeBtn, "close")
-                    .WithButton(TicketsLocale.TicketsButton_claimBtn, "claim")
-                    .Build();
+                var supportChannel = await Context.Guild.CreateTextChannelAsync("ticket-" + name, x => {
+                    x.PermissionOverwrites = new List<Overwrite> {
+                        new Overwrite(Context.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(readMessageHistory: PermValue.Deny, sendMessages: PermValue.Deny, viewChannel: PermValue.Deny)),
+                        new Overwrite(Context.User.Id, PermissionTarget.User, new OverwritePermissions(addReactions: PermValue.Allow, attachFiles: PermValue.Allow, embedLinks: PermValue.Allow, readMessageHistory: PermValue.Allow, sendMessages: PermValue.Allow, viewChannel: PermValue.Allow, useApplicationCommands: PermValue.Allow))
+                    };
+                });
                 var message = await supportChannel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbed_title,
+                    Title = "Ticket",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = name,
-                            Value = string.Format(TicketsLocale.TicketsEmbed_fieldValue, Context.User.Username)
+                            Value = $"Channel made by {Context.User.Username}"
                         }
                     },
                     Color = Color.Green
-                }.Build(), components: components);
+                }.Build(), components: new ComponentBuilder { 
+                    ActionRows = new List<ActionRowBuilder> {
+                        new ActionRowBuilder {
+                            Components = new List<IMessageComponent> {
+                                new ButtonBuilder {
+                                    CustomId = "close",
+                                    Label = "Close Ticket"
+                                }.Build(),
+                                new ButtonBuilder {
+                                    CustomId = "claim",
+                                    Label = "Claim Ticket"
+                                }.Build()
+                            }
+                        }
+                    }
+                }.Build());
                 await ticketsRepository.AddTicketAsync(Context.Guild.Id, supportChannel.Id, message.Id, new List<long?> { (long)Context.User.Id }, name, new List<long>());
                 await ticketsRepository.SaveAsync();
                 await RespondAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedCreated_title,
+                    Title = "Ticket Created",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = string.Format(TicketsLocale.TicketsEmbedCreated_fieldValue),
+                            Name = string.Format("Opened a new ticket:"),
                             Value = supportChannel.Mention
                         }
                     },
@@ -91,7 +92,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -102,14 +103,14 @@ namespace Finder.Bot.Modules.Addons {
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null
                     || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (!ticket.UserIds.Contains((long)Context.User.Id) || !ticket.ClaimedUserId.Contains((long)Context.User.Id)) {
-                    await RespondAsync(TicketsLocale.TicketsError_notOwner, ephemeral: true);
+                    await RespondAsync("You are not the owner of this ticket.", ephemeral: true);
                     return;
                 }
-                await RespondAsync(TicketsLocale.TicketsClosed);
+                await RespondAsync("Ticket Closed");
                 await ((SocketGuildChannel)Context.Channel).DeleteAsync();
                 await ticketsRepository.RemoveTicketAsync(Context.Guild.Id, Context.Channel.Id);
                 await ticketsRepository.SaveAsync();
@@ -123,7 +124,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -132,17 +133,17 @@ namespace Finder.Bot.Modules.Addons {
                     return;
                 }
                 if (!((SocketGuildUser)Context.User).GuildPermissions.Administrator) {
-                    await RespondAsync(TicketsLocale.TicketsError_noPermission, ephemeral: true);
+                    await RespondAsync("You do not have permission to claim a ticket.", ephemeral: true);
                     return;
                 }
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null
                     || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (ticket.ClaimedUserId.Contains((long)Context.User.Id)) {
-                    await RespondAsync(TicketsLocale.TicketsError_alreadyClaimed, ephemeral: true);
+                    await RespondAsync("You have already claimed this ticket.", ephemeral: true);
                     return;
                 }
                 await ((SocketGuildChannel)Context.Channel).AddPermissionOverwriteAsync(Context.User, new OverwritePermissions(
@@ -157,16 +158,16 @@ namespace Finder.Bot.Modules.Addons {
                 await ticketsRepository.AddTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
                 await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedClaim_title,
+                    Title = "Ticket Claimed",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = TicketsLocale.TicketsEmbedClaim_fieldName,
+                            Name = "Claimed By",
                             Value = Context.User.Username
                         }
                     },
                     Color = Color.Green
                 }.Build());
-                await RespondAsync(TicketsLocale.TicketsClaimed, ephemeral: true);
+                await RespondAsync("You have claimed this ticket.", ephemeral: true);
 
             }
 
@@ -178,7 +179,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -189,27 +190,27 @@ namespace Finder.Bot.Modules.Addons {
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null ||
                     await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (!ticket.ClaimedUserId.Contains((long)Context.User.Id)) {
-                    await RespondAsync(TicketsLocale.TicketsError_notClaimed, ephemeral: true);
+                    await RespondAsync("You have not claimed this ticket.", ephemeral: true);
                     return;
                 }
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(Context.User);
                 await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
                 await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedUnclaim_title,
+                    Title = "Ticket Unclaimed",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
+                            Name = "User",
                             Value = Context.User.Username
                         }
                     },
                     Color = Color.Green
                 }.Build());
-                await RespondAsync(TicketsLocale.TicketsUnclaimed, ephemeral: true);
+                await RespondAsync("You have unclaimed this ticket.", ephemeral: true);
             }
 
             [SlashCommand("adduser", "Adds a user to a ticket", runMode: RunMode.Async)]
@@ -220,7 +221,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -230,15 +231,15 @@ namespace Finder.Bot.Modules.Addons {
                 }
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (!(ticket.UserIds.Contains((long)Context.User.Id) || ticket.ClaimedUserId.Contains((long)Context.User.Id))) {
-                    await RespondAsync(TicketsLocale.TicketsError_notMember, ephemeral: true);
+                    await RespondAsync("You are not a member of this ticket.", ephemeral: true);
                     return;
                 }
                 if (ticket.UserIds.Contains((long)user.Id) || ticket.ClaimedUserId.Contains((long)user.Id)) {
-                    await RespondAsync(TicketsLocale.TicketsError_alreadyMember_user, ephemeral: true);
+                    await RespondAsync("This user is already a member of this ticket.", ephemeral: true);
                     return;
                 }
                 await ticketsRepository.AddTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
@@ -253,16 +254,16 @@ namespace Finder.Bot.Modules.Addons {
                     useApplicationCommands: PermValue.Allow
                 ));
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedAddUser_title,
+                    Title = "User Added",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = TicketsLocale.TicketsEmbedAddUser_fieldName,
+                            Name = "User",
                             Value = user.Username
                         }
                     },
                     Color = Color.Green
                 }.Build());
-                await RespondAsync(TicketsLocale.TicketsUserAdded, ephemeral: true);
+                await RespondAsync("User added.", ephemeral: true);
             }
 
             [SlashCommand("removeuser", "Removes a user from a ticket", runMode: RunMode.Async)]
@@ -273,7 +274,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -283,15 +284,15 @@ namespace Finder.Bot.Modules.Addons {
                 }
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (!(ticket.UserIds.Contains((long)Context.User.Id) || ticket.ClaimedUserId.Contains((long)Context.User.Id))) {
-                    await RespondAsync(TicketsLocale.TicketsError_notMember, ephemeral: true);
+                    await RespondAsync("You are not a member of this ticket.", ephemeral: true);
                     return;
                 }
                 if (!(ticket.UserIds.Contains((long)user.Id) || ticket.ClaimedUserId.Contains((long)user.Id))) {
-                    await RespondAsync(TicketsLocale.TicketsError_notMember_user, ephemeral: true);
+                    await RespondAsync("This user is not a member of this ticket.", ephemeral: true);
                     return;
                 }
                 await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
@@ -299,16 +300,16 @@ namespace Finder.Bot.Modules.Addons {
                 await ticketsRepository.SaveAsync();
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(user);
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedRemoveUser_title,
+                    Title = "User Removed",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = TicketsLocale.TicketsEmbedRemoveUser_fieldName,
+                            Name = "User",
                             Value = user.Username
                         }
                     },
                     Color = Color.Green
                 }.Build());
-                await RespondAsync(TicketsLocale.TicketsUserRemoved, ephemeral: true);
+                await RespondAsync("User removed.", ephemeral: true);
             }
 
             [SlashCommand("leave", "Leaves a ticket", runMode: RunMode.Async)]
@@ -319,7 +320,7 @@ namespace Finder.Bot.Modules.Addons {
                         Description = "This addon is disabled on this server.",
                         Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
-                            new EmbedFieldBuilder() {
+                            new EmbedFieldBuilder {
                                 Name = "Enable",
                                 Value = "Use `/addons install Ticketing` to enable this addon."
                             }
@@ -329,27 +330,27 @@ namespace Finder.Bot.Modules.Addons {
                 }
                 var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
-                    await RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                    await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
                 if (!(ticket.UserIds.Contains((long)Context.User.Id) || ticket.ClaimedUserId.Contains((long)Context.User.Id))) {
-                    await RespondAsync(TicketsLocale.TicketsError_notMember, ephemeral: true);
+                    await RespondAsync("You are not a member of this ticket.", ephemeral: true);
                     return;
                 }
                 await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
                 await ticketsRepository.RemoveTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
                 await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                    Title = TicketsLocale.TicketsEmbedRemoveUser_title,
+                    Title = "User Removed",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = TicketsLocale.TicketsEmbedRemoveUser_fieldName,
+                            Name = "User",
                             Value = Context.User.Username
                         }
                     },
                     Color = Color.Green
                 }.Build());
-                await RespondAsync(TicketsLocale.TicketsUserRemoved, ephemeral: true);
+                await RespondAsync("User removed.", ephemeral: true);
             }
 
             public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
@@ -364,40 +365,40 @@ namespace Finder.Bot.Modules.Addons {
                 if (message.Id == _closeConfirmId) {
                     switch(messageComponent.Data.CustomId) {
                         case "close-yes":
-                            await messageComponent.RespondAsync(TicketsLocale.TicketsClosed);
+                            await messageComponent.RespondAsync("Ticket Closed");
                             await ((SocketGuildChannel)message.Channel).DeleteAsync();
                             await ticketsRepository.RemoveTicketAsync(channel.Guild.Id, channel.Id);
                             await ticketsRepository.SaveAsync();
                             break;
                         case "close-no":
-                            await messageComponent.RespondAsync(TicketsLocale.TicketsClosedCancel);
+                            await messageComponent.RespondAsync("You have cancelled closing this ticket.");
                             break;
                     }
                 } else if ((long)message.Id == ticket.IntroMessageId) {
                     switch(messageComponent.Data.CustomId) {
                         case "close":
                             await messageComponent.RespondAsync(embed: new EmbedBuilder {
-                                Title = TicketsLocale.TicketsEmbedCloseConfirm_title,
+                                Title = "Are you sure?",
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = TicketsLocale.TicketsEmbedCloseConfirm_fieldName,
-                                        Value = TicketsLocale.TicketsEmbedCloseConfirm_fieldValue
+                                        Name = "Close Ticket",
+                                        Value = "This will close the ticket and delete the channel."
                                     }
                                 },
                                 Color = Color.Red
                             }.Build(), components: new ComponentBuilder()
-                                .WithButton(PollLocale.PollDefaultOption1, "close-yes")
-                                .WithButton(PollLocale.PollDefaultOption2, "close-no")
+                                .WithButton("Yes", "close-yes")
+                                .WithButton("No", "close-no")
                                 .Build());
                             _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
                             return;
                         case "claim" when !user.GuildPermissions.Administrator:
-                            await messageComponent.RespondAsync(TicketsLocale.TicketsError_noPermission, ephemeral: true);
+                            await messageComponent.RespondAsync("You do not have permission to claim a ticket.", ephemeral: true);
                             return;
                         case "claim":
                             var claimedUsers = await ticketsRepository.GetTicketsModelAsync(guild.Id, channel.Id);
                             if (claimedUsers.ClaimedUserId.Contains((long)user.Id)) {
-                                await messageComponent.RespondAsync(TicketsLocale.TicketsError_alreadyClaimed, ephemeral: true);
+                                await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
                                 return;
                             }
                             await channel.AddPermissionOverwriteAsync(user, new OverwritePermissions(
@@ -412,19 +413,19 @@ namespace Finder.Bot.Modules.Addons {
                             await ticketsRepository.AddTicketClaimedUserIdAsync(channel.Guild.Id, channel.Id, user.Id);
                             await ticketsRepository.SaveAsync();
                             await message.Channel.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = TicketsLocale.TicketsEmbedClaim_title,
+                                Title = "Ticket Claimed",
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = TicketsLocale.TicketsEmbedClaim_fieldName,
+                                        Name = "Claimed By",
                                         Value = user.Username
                                     }
                                 },
                                 Color = Color.Green
                             }.Build());
-                            await messageComponent.RespondAsync(TicketsLocale.TicketsClaimed, ephemeral: true);
+                            await messageComponent.RespondAsync("You have claimed this ticket.", ephemeral: true);
                             break;
                         default:
-                            await messageComponent.RespondAsync(TicketsLocale.TicketsError_notTicket, ephemeral: true);
+                            await messageComponent.RespondAsync("You are not in a ticket channel.", ephemeral: true);
                             return;
                     }
                 }

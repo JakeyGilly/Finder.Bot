@@ -1,6 +1,5 @@
 using Discord;
 using Discord.Interactions;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 
 namespace Finder.Bot.Modules.Addons {
@@ -20,7 +19,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -31,14 +30,14 @@ namespace Finder.Bot.Modules.Addons {
             user ??= Context.User;
             var economy = await economyRepository.GetEconomyModelAsync(Context.Guild.Id, user.Id);
             await RespondAsync(embed: new EmbedBuilder {
-                Title = string.Format(EconomyLocale.EconomyEmbedBal_title, user.Username),
+                Title = $"{user.Username}\'s balance",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedBal_field0Name,
+                        Name = "Money",
                         Value = economy.Money.ToString()
                     },
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedBal_field1Name,
+                        Name = "Bank",
                         Value = economy.Bank.ToString()
                     }
                 },
@@ -54,7 +53,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -64,16 +63,16 @@ namespace Finder.Bot.Modules.Addons {
             }
             var economy = await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id);
             if (economy.Money < amount) {
-                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoney);
+                await RespondAsync("You don\'t have enough money.");
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -amount, amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
-                Title = EconomyLocale.EconomyEmbedDeposit_title,
+                Title = "Deposit",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedDeposit_fieldName,
+                        Name = "You deposited",
                         Value = amount.ToString()
                     }
                 },
@@ -89,7 +88,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -99,16 +98,16 @@ namespace Finder.Bot.Modules.Addons {
             }
             var economy = await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id);
             if (economy.Bank < amount) {
-                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoneyBank);
+                await RespondAsync("You don\'t have enough money in your bank.");
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, amount, -amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
-                Title = EconomyLocale.EconomyEmbedWithdraw_title,
+                Title = "Withdraw",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedWithdraw_fieldName,
+                        Name = "You withdrew",
                         Value = amount.ToString()
                     }
                 },
@@ -124,7 +123,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -134,21 +133,21 @@ namespace Finder.Bot.Modules.Addons {
             }
             var economy = await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id);
             if (economy.Money < amount) {
-                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoney);
+                await RespondAsync("You don\'t have enough money.");
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -amount, 0);
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, amount, 0);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
-                Title = EconomyLocale.EconomyEmbedPay_title,
+                Title = "Pay",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedPay_field0Name,
+                        Name = "Payee",
                         Value = user.Username
                     },
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedPay_field1Name,
+                        Name = "Amount",
                         Value = amount.ToString()
                     }
                 },
@@ -164,7 +163,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -174,21 +173,21 @@ namespace Finder.Bot.Modules.Addons {
             }
             var economy = await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id);
             if (economy.Bank < amount) {
-                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoneyBank);
+                await RespondAsync("You don\'t have enough money in your bank.");
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, 0, -amount);
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, 0, amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
-                Title = EconomyLocale.EconomyEmbedTransfer_title,
+                Title = "Transfer",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedTransfer_field0Name,
+                        Name = "Payee",
                         Value = user.Username
                     },
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedTransfer_field1Name,
+                        Name = "Amount",
                         Value = amount.ToString()
                     }
                 },
@@ -204,7 +203,7 @@ namespace Finder.Bot.Modules.Addons {
                     Description = "This addon is disabled on this server.",
                     Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
-                        new EmbedFieldBuilder() {
+                        new EmbedFieldBuilder {
                             Name = "Enable",
                             Value = "Use `/addons install Economy` to enable this addon."
                         }
@@ -215,14 +214,14 @@ namespace Finder.Bot.Modules.Addons {
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, amount, 0);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
-                Title = EconomyLocale.EconomyEmbedSetBal_title,
+                Title = "Set Balance",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedSetBal_field0Name,
+                        Name = "User",
                         Value = user.Username
                     },
                     new EmbedFieldBuilder {
-                        Name = EconomyLocale.EconomyEmbedSetBal_field1Name,
+                        Name = "Amount",
                         Value = amount.ToString()
                     }
                 },

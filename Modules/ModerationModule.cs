@@ -4,7 +4,6 @@ using Discord.Net;
 using Discord.WebSocket;
 using Finder.Bot.Modules.Helpers;
 using Finder.Bot.Modules.Helpers.Enums;
-using Finder.Bot.Resources;
 using Finder.Database.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 
@@ -24,22 +23,22 @@ namespace Finder.Bot.Modules {
         [SlashCommand("ban", "Bans a user from the server.", runMode: RunMode.Async)]
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedBan_title,
+                Title = "Are you sure you want to ban this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -58,22 +57,22 @@ namespace Finder.Bot.Modules {
         [SlashCommand("kick", "Kicks a user from the server.", runMode: RunMode.Async)]
         public async Task KickCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedKick_title,
+                Title = "Are you sure you want to kick this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -92,22 +91,22 @@ namespace Finder.Bot.Modules {
         [SlashCommand("warn", "Warns a user.", runMode: RunMode.Async)]
         public async Task WarnCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedWarn_title,
+                Title = "Are you sure you want to warn this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -126,22 +125,22 @@ namespace Finder.Bot.Modules {
         [SlashCommand("mute", "Mutes a user.", runMode: RunMode.Async)]
         public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedMute_title,
+                Title = "Are you sure you want to mute this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -160,17 +159,17 @@ namespace Finder.Bot.Modules {
         [SlashCommand("unmute", "Unmutes a user.", runMode: RunMode.Async)]
         public async Task UnmuteCommand(SocketGuildUser user) {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedUnmute_title,
+                Title = "Are you sure you want to unmute this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -188,17 +187,17 @@ namespace Finder.Bot.Modules {
         [SlashCommand("unban", "Unbans a user.", runMode: RunMode.Async)]
         public async Task UnbanCommand(SocketGuildUser user) {
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedUnban_title,
+                Title = "Are you sure you want to unban this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -217,27 +216,27 @@ namespace Finder.Bot.Modules {
         public async Task TempBanCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
             DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedBan_title,
+                Title = "Are you sure you want to ban this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldTimeName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldTimeValue, time),
+                        Name = "For time",
+                        Value = $"{time}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -258,27 +257,27 @@ namespace Finder.Bot.Modules {
         public async Task TempMuteCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
             DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder {
-                Title = ModerationLocale.ModerationEmbedMute_title,
+                Title = "Are you sure you want to mute this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        Name = "for reason",
+                        Value = $"{reason}",
                         IsInline = false
                     },
                     new EmbedFieldBuilder {
-                        Name = ModerationLocale.ModerationEmbed_fieldTimeName,
-                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldTimeValue, time),
+                        Name = "For time",
+                        Value = $"{time}",
                         IsInline = false
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -331,7 +330,7 @@ namespace Finder.Bot.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
         }
@@ -350,42 +349,42 @@ namespace Finder.Bot.Modules {
                     case ModerationMessageType.Ban:
                         await guild.AddBanAsync(user, reason: moderationMessage.reason);
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedBanned_title,
+                            Title = "User Banned",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedBannedDM_title,
+                                Title = "You have been banned",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -400,42 +399,42 @@ namespace Finder.Bot.Modules {
                     case ModerationMessageType.Kick:
                         await user.KickAsync(moderationMessage.reason);
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedKicked_title,
+                            Title = "User Kicked",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedKickedDM_title,
+                                Title = "You have been kicked",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -449,42 +448,42 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Warn:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedWarned_title,
+                            Title = "User Warned",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedWarnedDM_title,
+                                Title = "You have been warned",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -498,42 +497,42 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Mute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedMuted_title,
+                            Title = "User Muted",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedMutedDM_title,
+                                Title = "You have been muted",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -557,42 +556,42 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Unmute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedUnmuted_title,
+                            Title = "User Unmuted",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedUnmutedDM_title,
+                                Title = "You have been Unmuted",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -606,42 +605,42 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Unban:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedUnbanned_title,
+                            Title = "User Unbanned",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedUnbannedDM_title,
+                                Title = "You have been unbanned",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -654,53 +653,52 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Tempban:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedTempbanned_title,
+                            Title = "Are you sure you want to temp ban this user?",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldDurationName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                    Name = "Until",
+                                    Value = $"{moderationMessage.time!.Value}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedTempbannedDM_title,
+                                Title = "You have been Temporarily Banned",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue,
-                                        moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldDurationName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                        Name = "Until",
+                                        Value = $"{moderationMessage.time!.Value}",
                                         IsInline = false
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());
@@ -715,53 +713,52 @@ namespace Finder.Bot.Modules {
                         return;
                     case ModerationMessageType.Tempmute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
-                            Title = ModerationLocale.ModerationEmbedTempmuted_title,
+                            Title = "Are you sure you want to temp mute this user?",
                             Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    Name = "User",
+                                    Value = $"{user.Mention} ({user.Username})",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    Name = "for reason",
+                                    Value = $"{moderationMessage.reason}",
                                     IsInline = false
                                 },
                                 new EmbedFieldBuilder {
-                                    Name = ModerationLocale.ModerationEmbed_fieldDurationName,
-                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                    Name = "Until",
+                                    Value = $"{moderationMessage.time!.Value}",
                                     IsInline = false
                                 }
                             },
                             Footer = new EmbedFooterBuilder {
-                                Text = Main.EmbedFooter
+                                Text = "FinderBot"
                             }
                         }.Build());
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
-                                Title = ModerationLocale.ModerationEmbedTempmutedDM_title,
+                                Title = "You have been Temporarily Muted",
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue,
-                                        moderationMessage.reason),
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                     new EmbedFieldBuilder {
-                                        Name = ModerationLocale.ModerationEmbed_fieldDurationName,
-                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                        Name = "Until",
+                                        Value = $"{moderationMessage.time!.Value}",
                                         IsInline = false
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder {
-                                    Text = Main.EmbedFooter
+                                    Text = "FinderBot"
                                 },
                                 ThumbnailUrl = guild.IconUrl
                             }.Build());

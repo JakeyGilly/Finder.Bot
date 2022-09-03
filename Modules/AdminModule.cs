@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Bot.Resources;
 
 namespace Finder.Bot.Modules {
     public class AdminModule : InteractionModuleBase<ShardedInteractionContext> {
@@ -12,13 +11,13 @@ namespace Finder.Bot.Modules {
             try {
                 await ((SocketTextChannel)Context.Channel).DeleteMessagesAsync(messages);
             } catch (Exception e) {
-                await ReplyAsync(AdminLocale.AdminError_purge);
+                await ReplyAsync("An error occurred while purging messages.");
             }
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Purged",
                 Color = Color.Orange,
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
         }
@@ -26,32 +25,32 @@ namespace Finder.Bot.Modules {
         [SlashCommand("slowmode", "Set the slowmode of a channel", runMode: RunMode.Async)]
         public async Task SlowmodeCommand(int seconds) {
             if (seconds < 0) {
-                await ReplyAsync(AdminLocale.AdminError_slowmodeNegative);
+                await ReplyAsync("The slowmode must be greater than or equal to 0.");
                 return;
             }
             await ((SocketTextChannel)Context.Channel).ModifyAsync(x => x.SlowModeInterval = seconds);
             await RespondAsync(embed: new EmbedBuilder {
-                Title = AdminLocale.AdminEmbedSlowmode_title,
+                Title = "Slowmode set",
                 Color = Color.Orange,
                 Fields = {
                     new EmbedFieldBuilder {
-                        Name = AdminLocale.AdminEmbedSlowmode_field0Name,
+                        Name = "Channel",
                         Value = Context.Channel.Name,
                         IsInline = true
                     },
                     new EmbedFieldBuilder {
-                        Name = AdminLocale.AdminEmbedSlowmode_field1Name,
+                        Name = "Slowmode",
                         Value = seconds.ToString(),
                         IsInline = true
                     },
                     new EmbedFieldBuilder {
-                        Name = AdminLocale.AdminEmbedSlowmode_field2Name,
+                        Name = "By user",
                         Value = Context.User.Username,
                         IsInline = true
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
         }
@@ -65,22 +64,22 @@ namespace Finder.Bot.Modules {
                 }
             }
             await RespondAsync(embed: new EmbedBuilder {
-                Title = AdminLocale.AdminEmbedLockdown_title,
+                Title = "Channel locked down",
                 Color = Color.Orange,
                 Fields = {
                     new EmbedFieldBuilder {
-                        Name = AdminLocale.AdminEmbedLockdown_field0Name,
+                        Name = "Channel",
                         Value = Context.Channel.Name,
                         IsInline = true
                     },
                     new EmbedFieldBuilder {
-                        Name = AdminLocale.AdminEmbedLockdown_field1Name,
+                        Name = "By user",
                         Value = Context.User.Username,
                         IsInline = true
                     }
                 },
                 Footer = new EmbedFooterBuilder {
-                    Text = Main.EmbedFooter
+                    Text = "FinderBot"
                 }
             }.Build());
         }
