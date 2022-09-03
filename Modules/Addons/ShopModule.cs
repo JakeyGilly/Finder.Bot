@@ -22,7 +22,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -56,10 +55,9 @@ namespace Finder.Bot.Modules.Addons {
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = itemToBuy.Name,
-                        Value = "For " + itemToBuy.BuyPrice * amount,
+                        Value = $"For {itemToBuy.BuyPrice * amount}",
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
         
@@ -69,7 +67,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -103,10 +100,9 @@ namespace Finder.Bot.Modules.Addons {
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = itemToSell.Name,
-                        Value = "For " + itemToSell.SellPrice * amount,
+                        Value = $"For {itemToSell.SellPrice * amount}",
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -116,7 +112,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -178,7 +173,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -194,14 +188,13 @@ namespace Finder.Bot.Modules.Addons {
                 return;
             }
             var embed = new EmbedBuilder {
-                Title = "Your inventory",
-                Color = Color.Green
+                Title = "Your inventory"
             };
             foreach (var item in items.ItemIds) {
                 var itemToBuy = ShopModule.itemsroot.Items.Find(x => x.Id == item);
                 var amount = items.ItemIds.Count(x => x == item);
                 if (embed.Fields.Find(x => x.Name.Substring(0, itemToBuy.Name.Length) == itemToBuy.Name) == null) {
-                    embed.AddField(itemToBuy.Name + " x" + amount, itemToBuy.Description);
+                    embed.AddField($"{itemToBuy.Name} x{amount}", itemToBuy.Description);
                 }
             }
             await RespondAsync(embed: embed.Build());

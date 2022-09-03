@@ -36,12 +36,12 @@ namespace Finder.Bot.Modules {
                     },
                     new EmbedFieldBuilder {
                         Name = "RAM",
-                        Value = ramMb + " MB",
+                        Value = $"{ramMb} MB",
                         IsInline = true
                     },
                     new EmbedFieldBuilder {
                         Name = "Ping",
-                        Value = ping.ToString() + "ms",
+                        Value = $"{ping}ms",
                         IsInline = true
                     },
                     new EmbedFieldBuilder {

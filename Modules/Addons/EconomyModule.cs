@@ -10,13 +10,13 @@ namespace Finder.Bot.Modules.Addons {
             economyRepository = _economyRepository;
             addonsRepository = _addonsRepository;
         }
+        
         [SlashCommand("balance", "Checks user's balance.", runMode: RunMode.Async)]
         public async Task Balance(IUser? user = null) {
             if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -39,8 +39,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "Bank",
                         Value = economy.Bank.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -50,7 +49,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -74,8 +72,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "You deposited",
                         Value = amount.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -85,7 +82,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -109,8 +105,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "You withdrew",
                         Value = amount.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -120,7 +115,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -149,8 +143,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "Amount",
                         Value = amount.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -160,7 +153,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -189,8 +181,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "Amount",
                         Value = amount.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
 
@@ -200,7 +191,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -223,8 +213,7 @@ namespace Finder.Bot.Modules.Addons {
                         Name = "Amount",
                         Value = amount.ToString()
                     }
-                },
-                Color = Color.Green
+                }
             }.Build());
         }
     }

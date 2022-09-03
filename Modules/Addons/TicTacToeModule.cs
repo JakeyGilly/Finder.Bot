@@ -30,7 +30,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "TicTacToe",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -73,7 +72,6 @@ namespace Finder.Bot.Modules.Addons {
                             await game.playChannel.SendMessageAsync($"{game.guild.GetUser(game.p1Id).Mention} and {game.guild.GetUser(game.p2Id).Mention} are ready!\nStarting game...");
                             game.playMessage = await game.playChannel.SendMessageAsync(embed: new EmbedBuilder {
                                 Title = "Tic Tac Toe",
-                                Color = Color.Blue,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
                                         Name = "The Playing Board",
@@ -89,7 +87,6 @@ namespace Finder.Bot.Modules.Addons {
                             await game.playMessage.ModifyAsync((x) => {
                                 x.Embed = new EmbedBuilder {
                                     Title = "Tic Tac Toe",
-                                    Color = Color.Orange,
                                     Fields = new List<EmbedFieldBuilder> {
                                         new EmbedFieldBuilder {
                                             Name = "The Playing Board",
@@ -118,7 +115,6 @@ namespace Finder.Bot.Modules.Addons {
                 await game.playMessage.ModifyAsync((x) => {
                     x.Embed = new EmbedBuilder {
                         Title = "Tic Tac Toe",
-                        Color = Color.Orange,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "The Playing Board",
@@ -137,7 +133,6 @@ namespace Finder.Bot.Modules.Addons {
                     await game.playMessage.ModifyAsync((x) => {
                         x.Embed = new EmbedBuilder {
                             Title = "Tic Tac Toe",
-                            Color = Color.Green,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
                                     Name = "The Playing Board",
@@ -155,7 +150,6 @@ namespace Finder.Bot.Modules.Addons {
                     await game.playMessage.ModifyAsync((x) => {
                         x.Embed = new EmbedBuilder {
                             Title = "Tic Tac Toe",
-                            Color = Color.Green,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
                                     Name = "The Playing Board",

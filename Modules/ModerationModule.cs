@@ -20,7 +20,6 @@ namespace Finder.Bot.Modules {
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to ban this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -54,7 +53,6 @@ namespace Finder.Bot.Modules {
         public async Task KickCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to kick this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -88,7 +86,6 @@ namespace Finder.Bot.Modules {
         public async Task WarnCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to warn this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -122,7 +119,6 @@ namespace Finder.Bot.Modules {
         public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to mute this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -156,7 +152,6 @@ namespace Finder.Bot.Modules {
         public async Task UnmuteCommand(SocketGuildUser user) {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to unmute this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -184,7 +179,6 @@ namespace Finder.Bot.Modules {
         public async Task UnbanCommand(SocketGuildUser user) {
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to unban this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -213,7 +207,6 @@ namespace Finder.Bot.Modules {
             DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to ban this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -254,7 +247,6 @@ namespace Finder.Bot.Modules {
             DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Are you sure you want to mute this user?",
-                Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "User",
@@ -291,13 +283,13 @@ namespace Finder.Bot.Modules {
         }
 
         [SlashCommand("logs", "Displays the logs for a user.", runMode: RunMode.Async)]
-        public async Task LogsCommand(SocketGuildUser? user = null) {
-            var logs = await _userLogsRepository.GetUserLogsModelAsync(Context.Guild.Id, (user?.Id ?? Context.User.Id));
+        public async Task LogsCommand(IUser? user = null) {
+            user ??= Context.User;
+            var logs = await _userLogsRepository.GetUserLogsModelAsync(Context.Guild.Id, user.Id);
             var muteRoleId = await _settingsRepository.GetSettingAsync(Context.Guild.Id, "muteRoleId");
-            var ismuted = ((SocketGuildUser)(user ?? Context.User)).Roles.Any(x => x.Id == ulong.Parse(muteRoleId!));
+            var ismuted = ((SocketGuildUser)user).Roles.Any(x => x.Id == ulong.Parse(muteRoleId!));
             await RespondAsync(embed: new EmbedBuilder {
-                Title = "Logs for " + (user == null ? Context.User.Username : user.Username),
-                Color = Color.Red,
+                Title = $"Logs for {user.Username}",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Warnings",
@@ -346,7 +338,6 @@ namespace Finder.Bot.Modules {
                         await guild.AddBanAsync(user, reason: moderationMessage.reason);
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
                             Title = "User Banned",
-                            Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
                                     Name = "User",
@@ -366,7 +357,6 @@ namespace Finder.Bot.Modules {
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
                                 Title = "You have been banned",
-                                Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
                                         Name = "Server",
@@ -396,7 +386,6 @@ namespace Finder.Bot.Modules {
                         await user.KickAsync(moderationMessage.reason);
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
                             Title = "User Kicked",
-                            Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
                                     Name = "User",
@@ -416,7 +405,6 @@ namespace Finder.Bot.Modules {
                         try {
                             await user.SendMessageAsync(embed: new EmbedBuilder {
                                 Title = "You have been kicked",
-                                Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
                                         Name = "Server",
@@ -445,7 +433,6 @@ namespace Finder.Bot.Modules {
                     case ModerationMessageType.Warn:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
                             Title = "User Warned",
-                            Color = Color.Red,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder {
                                     Name = "User",

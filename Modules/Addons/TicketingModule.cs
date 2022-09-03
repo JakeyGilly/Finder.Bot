@@ -21,7 +21,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -39,7 +38,7 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync("The name of the ticket is too long.");
                     return;
                 }
-                var supportChannel = await Context.Guild.CreateTextChannelAsync("ticket-" + name, x => {
+                var supportChannel = await Context.Guild.CreateTextChannelAsync($"ticket-{name}", x => {
                     x.PermissionOverwrites = new List<Overwrite> {
                         new Overwrite(Context.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(readMessageHistory: PermValue.Deny, sendMessages: PermValue.Deny, viewChannel: PermValue.Deny)),
                         new Overwrite(Context.User.Id, PermissionTarget.User, new OverwritePermissions(addReactions: PermValue.Allow, attachFiles: PermValue.Allow, embedLinks: PermValue.Allow, readMessageHistory: PermValue.Allow, sendMessages: PermValue.Allow, viewChannel: PermValue.Allow, useApplicationCommands: PermValue.Allow))
@@ -52,8 +51,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = name,
                             Value = $"Channel made by {Context.User.Username}"
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build(), components: new ComponentBuilder { 
                     ActionRows = new List<ActionRowBuilder> {
                         new ActionRowBuilder {
@@ -79,8 +77,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = string.Format("Opened a new ticket:"),
                             Value = supportChannel.Mention
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build());
             }
 
@@ -90,7 +87,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -122,7 +118,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -164,8 +159,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = "Claimed By",
                             Value = Context.User.Username
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build());
                 await RespondAsync("You have claimed this ticket.", ephemeral: true);
 
@@ -177,7 +171,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -207,8 +200,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = "User",
                             Value = Context.User.Username
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build());
                 await RespondAsync("You have unclaimed this ticket.", ephemeral: true);
             }
@@ -219,7 +211,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -260,8 +251,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = "User",
                             Value = user.Username
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build());
                 await RespondAsync("User added.", ephemeral: true);
             }
@@ -272,7 +262,6 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Enable",
@@ -306,8 +295,7 @@ namespace Finder.Bot.Modules.Addons {
                             Name = "User",
                             Value = user.Username
                         }
-                    },
-                    Color = Color.Green
+                    }
                 }.Build());
                 await RespondAsync("User removed.", ephemeral: true);
             }

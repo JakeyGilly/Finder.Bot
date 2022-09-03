@@ -27,7 +27,6 @@ public static class CountdownTimer {
                 if (messages != null) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder {
                         Title = "Countdown",
-                        Color = Color.Orange,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Time left",
@@ -65,7 +64,6 @@ public static class CountdownTimer {
             var timeLeft = c.DateTime - DateTime.Now.ToUniversalTime();
             await messages.ModifyAsync(x => x.Embed = new EmbedBuilder {
                 Title = "Countdown",
-                Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Time left",

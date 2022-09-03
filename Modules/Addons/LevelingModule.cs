@@ -19,7 +19,6 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Leveling",
                     Description = "This addon is disabled on this server.",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Enable",
@@ -32,7 +31,6 @@ namespace Finder.Bot.Modules.Addons {
             var levels = await levelingRepository.GetLevelingModelAsync(((SocketGuildUser)Context.User).Guild.Id, Context.User.Id);
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Level",
-                Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Level",
@@ -58,7 +56,6 @@ namespace Finder.Bot.Modules.Addons {
                 await levelingRepository.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.Level, 0);
                 await message.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = $"Level Up {message.Author.Username}",
-                    Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "You have leveled up to level",

@@ -15,7 +15,6 @@ namespace Finder.Bot.Modules {
             var value = await addonsRepository.GetAddonsModelAsync(Context.Guild.Id);
             var embed = new EmbedBuilder {
                 Title = "Addon list",
-                Color = Color.Orange,
                 Footer = new EmbedFooterBuilder {
                     Text = "FinderBot"
                 }
@@ -46,7 +45,6 @@ namespace Finder.Bot.Modules {
             await addonsRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Addon Installed",
-                Color = Color.Green,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Addon",
@@ -73,7 +71,6 @@ namespace Finder.Bot.Modules {
             await addonsRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Addon Uninstalled",
-                Color = Color.Green,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Addon",

@@ -30,7 +30,6 @@ public static class UnBanMuteTimer {
                     user = guild.GetUser((ulong)c.UserId);
                     await user.SendMessageAsync(embed: new EmbedBuilder {
                         Title = "You have been unbanned",
-                        Color = Color.Red,
                         Fields = new List<EmbedFieldBuilder> {
                             new EmbedFieldBuilder {
                                 Name = "Server",
@@ -55,7 +54,6 @@ public static class UnBanMuteTimer {
                 user = guild.GetUser((ulong)c.UserId);
                 await user.SendMessageAsync(embed: new EmbedBuilder {
                     Title = "You have been Unmuted",
-                    Color = Color.Red,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
                             Name = "Server",

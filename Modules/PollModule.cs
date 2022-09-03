@@ -17,7 +17,6 @@ namespace Finder.Bot.Modules {
             var embed = new EmbedBuilder {
                 Title = question,
                 Description = $"Poll created by {Context.User.Username}",
-                Color = Color.Blue,
                 Footer = new EmbedFooterBuilder {
                     Text = "FinderBot"
                 }
@@ -181,15 +180,14 @@ namespace Finder.Bot.Modules {
                         }
                     }
                     await messageComponent.Message.ModifyAsync(x => {
-                        EmbedBuilder newEmbed = new EmbedBuilder();
-                        newEmbed.WithTitle(embed.Title);
-                        newEmbed.WithDescription(embed.Description);
-                        newEmbed.WithColor(Color.Blue);
-                        newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
-                        newEmbed.WithFields(newFields);
-                        x.Embed = newEmbed.Build();
+                        x.Embed = new EmbedBuilder {
+                            Title = embed.Title,
+                            Description = embed.Description,
+                            Footer = new EmbedFooterBuilder().WithText("FinderBot"),
+                            Fields = newFields
+                        }.Build();
                     });
-                    await messageComponent.RespondAsync("You voted for " + poll.Answers[i], ephemeral: true);
+                    await messageComponent.RespondAsync($"You voted for {poll.Answers[i]}", ephemeral: true);
                     poll.VotersId.Add((Int64)messageComponent.User.Id);
                 } else {
                     await messageComponent.RespondAsync("You already voted on this poll", ephemeral: true);

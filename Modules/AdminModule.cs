@@ -14,7 +14,6 @@ namespace Finder.Bot.Modules {
             }
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Purged",
-                Color = Color.Orange,
                 Footer = new EmbedFooterBuilder {
                     Text = "FinderBot"
                 }
@@ -30,8 +29,7 @@ namespace Finder.Bot.Modules {
             await ((SocketTextChannel)Context.Channel).ModifyAsync(x => x.SlowModeInterval = seconds);
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Slowmode set",
-                Color = Color.Orange,
-                Fields = {
+                Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Channel",
                         Value = Context.Channel.Name,
@@ -64,8 +62,7 @@ namespace Finder.Bot.Modules {
             }
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Channel locked down",
-                Color = Color.Orange,
-                Fields = {
+                Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Channel",
                         Value = Context.Channel.Name,

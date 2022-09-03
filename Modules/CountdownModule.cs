@@ -31,7 +31,6 @@ namespace Finder.Bot.Modules {
             }
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Countdown",
-                Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder {
                         Name = "Time left",
