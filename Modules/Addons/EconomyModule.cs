@@ -1,6 +1,6 @@
 using Discord;
 using Discord.Interactions;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 
 namespace Finder.Bot.Modules.Addons {
     public class EconomyModule : InteractionModuleBase<ShardedInteractionContext> {

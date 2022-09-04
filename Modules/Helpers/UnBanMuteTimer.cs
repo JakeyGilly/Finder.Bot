@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 using System.Timers;
 
 namespace Finder.Bot.Modules.Helpers;

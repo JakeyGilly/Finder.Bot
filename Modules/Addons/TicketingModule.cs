@@ -1,8 +1,8 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Database.Models.Bot;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Models.Data.Bot;
+using Finder.Bot.Repositories.Bot;
 
 namespace Finder.Bot.Modules.Addons {
     public class TicketingModule {

@@ -2,7 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 namespace Finder.Bot.Modules.Addons {
     public class TicTacToeModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly AddonsRepository addonsRepository;

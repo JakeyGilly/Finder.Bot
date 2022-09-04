@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
-using Finder.Database.Repositories.Bot;
-using Finder.Shared.Models;
+using Finder.Bot.Models;
+using Finder.Bot.Repositories.Bot;
 using Newtonsoft.Json;
 
 namespace Finder.Bot.Modules.Addons {

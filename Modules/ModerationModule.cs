@@ -4,7 +4,7 @@ using Discord.Net;
 using Discord.WebSocket;
 using Finder.Bot.Modules.Helpers;
 using Finder.Bot.Modules.Helpers.Enums;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 
 namespace Finder.Bot.Modules {

@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 using System.Text;
 

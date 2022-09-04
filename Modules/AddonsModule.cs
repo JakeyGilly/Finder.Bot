@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
     [Group("addons", "Command For Managing Addons")]
@@ -20,11 +20,11 @@ namespace Finder.Bot.Modules {
                 }
             };
             if (value == null || value.Addons.Count == 0) {
-                foreach (var addon in Enum.GetValues(typeof(Shared.Enums.Addons))) {
+                foreach (var addon in Enum.GetValues(typeof(Enums.Addons))) {
                     embed.AddField(addon.ToString(), "Not installed", false);
                 }
             } else {
-                foreach (var addon in Enum.GetValues(typeof(Shared.Enums.Addons))) {
+                foreach (var addon in Enum.GetValues(typeof(Enums.Addons))) {
                     embed.AddField(addon.ToString(), value.Addons.Keys.Contains(addon.ToString()) && value.Addons.First(x => x.Key == addon.ToString()).Value == "true" ? "Installed" : "Not Installed", false);
                 }
             }
@@ -33,7 +33,7 @@ namespace Finder.Bot.Modules {
 
         [SlashCommand("install", "Installs an addon", runMode: RunMode.Async)]
         public async Task InstallAddon([Autocomplete(typeof(AddonsInstallAutocompleteHandler))] string addon) {
-            if (!Enum.TryParse(addon, out Shared.Enums.Addons addonEnum)) {
+            if (!Enum.TryParse(addon, out Enums.Addons addonEnum)) {
                 await RespondAsync("Error: Addon not found");
                 return;
             }
@@ -59,7 +59,7 @@ namespace Finder.Bot.Modules {
 
         [SlashCommand("uninstall", "Uninstalls an addon", runMode: RunMode.Async)]
         public async Task UninstallAddon([Autocomplete(typeof(AddonsUninstallAutocompleteHandler))] string addon) {
-            if (!Enum.TryParse(addon, out Shared.Enums.Addons addonEnum)) {
+            if (!Enum.TryParse(addon, out Enums.Addons addonEnum)) {
                 await RespondAsync("Error: Addon not found");
                 return;
             }
@@ -91,7 +91,7 @@ namespace Finder.Bot.Modules {
         }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
             List<AutocompleteResult> results = new List<AutocompleteResult>();
-            foreach (var addon in Enum.GetValues(typeof(Shared.Enums.Addons))) {
+            foreach (var addon in Enum.GetValues(typeof(Enums.Addons))) {
                 if (!await addonsRepository.AddonEnabled(context.Guild.Id, addon.ToString())) {
                     results.Add(new AutocompleteResult(addon.ToString(), addon.ToString()));
                 }
@@ -108,7 +108,7 @@ namespace Finder.Bot.Modules {
         }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
             List<AutocompleteResult> results = new List<AutocompleteResult>();
-            foreach (var addon in Enum.GetValues(typeof(Shared.Enums.Addons))) {
+            foreach (var addon in Enum.GetValues(typeof(Enums.Addons))) {
                 if (await addonsRepository.AddonEnabled(context.Guild.Id, addon.ToString())) {
                     results.Add(new AutocompleteResult(addon.ToString(), addon.ToString()));
                 }

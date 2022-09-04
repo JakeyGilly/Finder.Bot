@@ -1,17 +1,15 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Finder.Bot.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Finder.Bot.Modules;
-using Finder.Database.DatabaseContexts;
-using Finder.Database.Repositories;
 using Finder.Bot.Handlers;
 using Finder.Bot.Modules.Addons;
 using Finder.Bot.Modules.Helpers;
-using Finder.Database.Repositories.Bot;
+using Finder.Bot.Repositories.Bot;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Finder.Bot;
 

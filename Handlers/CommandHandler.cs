@@ -1,7 +1,6 @@
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Database.Repositories.Bot;
-using Finder.Shared.Enums;
+using Finder.Bot.Repositories.Bot;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
