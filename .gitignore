@@ -1,7 +1,5 @@
 bin/
 obj/
-appsettings.json
-launchSettings.json
 .idea/
 .vs/
 Migrations/
