@@ -21,8 +21,8 @@ class Program {
         await handler.Initialize();
         client.Log += LoggingService.LogAsync;
         commands.Log += LoggingService.LogAsync;
-        CountdownTimer.StartTimer(client, services.GetRequiredService<IUnitOfWork>());
-        UnBanMuteTimer.StartTimer(client, services.GetRequiredService<IUnitOfWork>());
+        // CountdownTimer.StartTimer(client, services.GetRequiredService<IUnitOfWork>());
+        // UnBanMuteTimer.StartTimer(client, services.GetRequiredService<IUnitOfWork>());
         client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
         client.ReactionAdded += new ModerationModule(services.GetRequiredService<IUnitOfWork>()).OnReactionAddedEvent;
         client.ButtonExecuted += new PollModule(services.GetRequiredService<IUnitOfWork>()).OnButtonExecutedEvent;
