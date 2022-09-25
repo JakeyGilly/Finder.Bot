@@ -19,14 +19,8 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.4.22229.4" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.4.22229.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.6.22324.4" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
 		<PackageReference Include="Pathoschild.NaturalTimeParser" Version="0.2.0-alpha" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Models\Data" />
 	</ItemGroup>
 </Project>
