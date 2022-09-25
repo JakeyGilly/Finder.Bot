@@ -7,13 +7,13 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       BOT_TOKEN: "BOT_TOKEN"
-      DB_CONNECTION_STRING: "Server=db;Port=5432;Database=finder;User Id=postgres;Password=finder;"
+      DB_CONNECTION_STRING: "Server=db;Database=YOUR_DATABASE;User Id=YOUR_USER;Password=YOUR_PASSWORD;"
   db:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: "finder"
-      POSTGRES_USER: "postgres"
-      POSTGRES_DB: "finder"
+      POSTGRES_PASSWORD: "YOUR_PASSWORD"
+      POSTGRES_USER: "YOUR_USER"
+      POSTGRES_DB: "YOUR_DATABASE"
   web:
     ports:
       - "8080:80"
@@ -25,5 +25,5 @@ services:
       DISCORD_CLIENT_SECRET: "DISCORD_CLIENT_SECRET"
       DISCORD_CLIENT_ID: "DISCORD_CLIENT_ID"
       DISCORD_BOT_TOKEN: "DISCORD_BOT_TOKEN"
-      DB_CONNECTION_STRING: "Server=db;Port=5432;Database=finder;User Id=postgres;Password=finder;"
+      DB_CONNECTION_STRING: "Server=db;Database=YOUR_DATABASE;User Id=YOUR_USER;Password=YOUR_PASSWORD;"
       BOT_OWNERS: "USER_ID,USER_ID"
