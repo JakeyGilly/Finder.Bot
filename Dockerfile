@@ -3,7 +3,8 @@ WORKDIR /app
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="${PATH}:~/.dotnet/tools/"
-RUN chmod +x ./entrypoint.sh
-CMD /bin/bash ./entrypoint.sh
+
+FROM mcr.microsoft.com/dotnet/runtime:6.0
+WORKDIR /app
+COPY --from=build /app/out .
+ENTRYPOINT ["dotnet", "DotNet.Docker.dll"]
