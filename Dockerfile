@@ -7,4 +7,4 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /app
 COPY --from=build /app/out .
-ENTRYPOINT ["dotnet", "DotNet.Docker.dll"]
+ENTRYPOINT ["dotnet", "Finder.Bot.dll"]
