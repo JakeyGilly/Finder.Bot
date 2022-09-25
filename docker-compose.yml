@@ -4,7 +4,6 @@ services:
     build: .
     depends_on:
       - db
-    image: bot
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       BOT_TOKEN: "BOT_TOKEN"
