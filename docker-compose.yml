@@ -32,7 +32,7 @@ services:
   migrate:
     depends_on:
       - db
-    image: ghcr.io/jakeygilly/finderweb:latest
+    image: ghcr.io/jakeygilly/finderdb:latest
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       DB_CONNECTION_STRING: "Server=db;Database=DB_DATABASE;User Id=DB_USER;Password=DB_PASSWORD;"
