@@ -1,22 +1,16 @@
 using Discord.Interactions;
 using Discord.WebSocket;
-using Finder.Bot.Repositories.Bot;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace Finder.Bot.Handlers {
     public class CommandHandler {
         private readonly InteractionService commands;
         private readonly DiscordShardedClient client;
-        private readonly IConfiguration config;
         private readonly IServiceProvider services;
-        private readonly AddonsRepository addonsRepository;
-        public CommandHandler(InteractionService _commands, DiscordShardedClient _client, IConfiguration _config, IServiceProvider _services, AddonsRepository _addonsRepository) {
+        public CommandHandler(InteractionService _commands, DiscordShardedClient _client,  IServiceProvider _services) {
             commands = _commands;
             client = _client;
-            config = _config;
             services = _services;
-            addonsRepository = _addonsRepository;
         }
 
         public async Task Initialize() {
