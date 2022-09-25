@@ -4,16 +4,14 @@ using Discord.Net;
 using Discord.WebSocket;
 using Finder.Bot.Modules.Helpers;
 using Finder.Bot.Modules.Helpers.Enums;
-using Finder.Bot.Repositories.Bot;
+using Finder.Bot.Repositories;
 using Pathoschild.NaturalTimeParser.Parser;
 
 namespace Finder.Bot.Modules {
     public class ModerationModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly SettingsRepository _settingsRepository;
-        private readonly UserLogsRepository _userLogsRepository;
-        public ModerationModule(SettingsRepository settingsRepository, UserLogsRepository userLogsRepository) {
-            _settingsRepository = settingsRepository;
-            _userLogsRepository = userLogsRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public ModerationModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         private static readonly List<ModerationMessage> ModerationMessages = new List<ModerationMessage>();
         [SlashCommand("ban", "Bans a user from the server.", runMode: RunMode.Async)]
@@ -285,8 +283,8 @@ namespace Finder.Bot.Modules {
         [SlashCommand("logs", "Displays the logs for a user.", runMode: RunMode.Async)]
         public async Task LogsCommand(IUser? user = null) {
             user ??= Context.User;
-            var logs = await _userLogsRepository.GetUserLogsModelAsync(Context.Guild.Id, user.Id);
-            var muteRoleId = await _settingsRepository.GetSettingAsync(Context.Guild.Id, "muteRoleId");
+            var logs = await _unitOfWork.UserLogs.FindAsync(Context.Guild.Id, user.Id);
+            var muteRoleId = await _unitOfWork.Settings.GetSettingAsync(Context.Guild.Id, "muteRoleId");
             var ismuted = ((SocketGuildUser)user).Roles.Any(x => x.Id == ulong.Parse(muteRoleId!));
             await RespondAsync(embed: new EmbedBuilder {
                 Title = $"Logs for {user.Username}",
@@ -332,7 +330,7 @@ namespace Finder.Bot.Modules {
                 var user = guild.GetUser(moderationMessage.userId);
                 if (guild.Id != moderationMessage.guildId || message.Id != reaction.MessageId || reaction.UserId != moderationMessage.senderId) continue;
                 if (reaction.User.Value.Id != moderationMessage.senderId || reaction.Emote.Name != "✅") continue;
-                var userLogs = await _userLogsRepository.GetUserLogsModelAsync(guild.Id, user.Id);
+                var userLogs = await _unitOfWork.UserLogs.FindAsync(guild.Id, user.Id);
                 switch(moderationMessage.Type) {
                     case ModerationMessageType.Ban:
                         await guild.AddBanAsync(user, reason: moderationMessage.reason);
@@ -379,8 +377,8 @@ namespace Finder.Bot.Modules {
                         }
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans + 1, userLogs.Kicks, userLogs.Warns, userLogs.Mutes);
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans + 1, userLogs.Kicks, userLogs.Warns, userLogs.Mutes);
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                     case ModerationMessageType.Kick:
                         await user.KickAsync(moderationMessage.reason);
@@ -427,8 +425,8 @@ namespace Finder.Bot.Modules {
                         }
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks + 1, userLogs.Warns, userLogs.Mutes);
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks + 1, userLogs.Warns, userLogs.Mutes);
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                     case ModerationMessageType.Warn:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
@@ -475,8 +473,8 @@ namespace Finder.Bot.Modules {
                         }
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns + 1, userLogs.Mutes);
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns + 1, userLogs.Mutes);
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                     case ModerationMessageType.Mute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
@@ -522,20 +520,20 @@ namespace Finder.Bot.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        if (!(await _settingsRepository.SettingExists(guild.Id, "muteRoleId"))) {
+                        if (!(await _unitOfWork.Settings.SettingExists(guild.Id, "muteRoleId"))) {
                             var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
-                            await _settingsRepository.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
-                            await _settingsRepository.SaveAsync();
+                            await _unitOfWork.Settings.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            await _unitOfWork.SaveChangesAsync();
                             foreach (var _ in guild.Channels) {
                                 await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
                             }
                         }
-                        var muteRole = guild.GetRole(Convert.ToUInt64(await _settingsRepository.GetSettingAsync(guild.Id, "muteRoleId")));
+                        var muteRole = guild.GetRole(Convert.ToUInt64(await _unitOfWork.Settings.GetSettingAsync(guild.Id, "muteRoleId")));
                         await user.AddRoleAsync(muteRole);
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns, userLogs.Mutes + 1);
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns, userLogs.Mutes + 1);
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                     case ModerationMessageType.Unmute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
@@ -581,7 +579,7 @@ namespace Finder.Bot.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        var muteRole2 = guild.GetRole(Convert.ToUInt64(await _settingsRepository.GetSettingAsync(guild.Id, "muteRoleId")));
+                        var muteRole2 = guild.GetRole(Convert.ToUInt64(await _unitOfWork.Settings.GetSettingAsync(guild.Id, "muteRoleId")));
                         await user.RemoveRoleAsync(muteRole2);
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
@@ -690,9 +688,9 @@ namespace Finder.Bot.Modules {
                         }
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans + 1, userLogs.Kicks, userLogs.Warns, userLogs.Mutes);
-                        await _userLogsRepository.AddTempbanTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans + 1, userLogs.Kicks, userLogs.Warns, userLogs.Mutes);
+                        await _unitOfWork.UserLogs.AddTempbanTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                     case ModerationMessageType.Tempmute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder {
@@ -748,21 +746,21 @@ namespace Finder.Bot.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        if (!(await _settingsRepository.SettingExists(guild.Id, "muteRoleId"))) {
+                        if (!(await _unitOfWork.Settings.SettingExists(guild.Id, "muteRoleId"))) {
                             var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
-                            await _settingsRepository.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
-                            await _settingsRepository.SaveAsync();
+                            await _unitOfWork.Settings.AddSettingAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            await _unitOfWork.SaveChangesAsync();
                             foreach (var _ in guild.Channels) {
                                 await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
                             }
                         }
-                        var muteRole3 = guild.GetRole(Convert.ToUInt64(await _settingsRepository.GetSettingAsync(guild.Id, "muteRoleId")));
+                        var muteRole3 = guild.GetRole(Convert.ToUInt64(await _unitOfWork.Settings.GetSettingAsync(guild.Id, "muteRoleId")));
                         await user.AddRoleAsync(muteRole3);
                         await message.RemoveAllReactionsAsync();
                         ModerationMessages.Remove(moderationMessage);
-                        await _userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns, userLogs.Mutes + 1);
-                        await _userLogsRepository.AddTempmuteTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
-                        await _userLogsRepository.SaveAsync();
+                        await _unitOfWork.UserLogs.AddUserLogsAsync(guild.Id, user.Id, userLogs.Bans, userLogs.Kicks, userLogs.Warns, userLogs.Mutes + 1);
+                        await _unitOfWork.UserLogs.AddTempmuteTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
+                        await _unitOfWork.SaveChangesAsync();
                         return;
                 }
             }

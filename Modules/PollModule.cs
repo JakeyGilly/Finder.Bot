@@ -1,13 +1,14 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Finder.Bot.Repositories;
 using Finder.Bot.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
    public class PollModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly PollsRepository pollsRepository;
-        public PollModule(PollsRepository _pollsRepository) {
-            pollsRepository = _pollsRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public PollModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         [SlashCommand("poll", "Create a poll for users to vote on.", runMode: RunMode.Async)]
         public async Task PollCommand(string question, string? answer1 = null, string? answer2 = null, string? answer3 = null, string? answer4 = null, string? answer5 = null, string? answer6 = null, string? answer7 = null, string? answer8 = null, string? answer9 = null, string? answer10 = null,
@@ -151,12 +152,12 @@ namespace Finder.Bot.Modules {
                 answers.Add(answer24);
             }
             await RespondAsync("", embed: embed.Build(), components: builder.Build());
-            await pollsRepository.AddPollsAsync((await GetOriginalResponseAsync()).Id, answers, new List<long>());
+            await _unitOfWork.Polls.AddPollsAsync((await GetOriginalResponseAsync()).Id, answers, new List<long>());
         }
         
         public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
-            if (!await pollsRepository.PollExistsAsync(messageComponent.Message.Id)) return;
-            var poll = await pollsRepository.GetPollsModelAsync(messageComponent.Message.Id);
+            if (!await _unitOfWork.Polls.PollExistsAsync(messageComponent.Message.Id)) return;
+            var poll = await _unitOfWork.Polls.GetAsync(messageComponent.Message.Id);
             for (int i = 0; i < poll.Answers.Count; i++) {
                 if (messageComponent.Data.CustomId != i.ToString()) continue;
                 if (!poll.VotersId.Contains((Int64)messageComponent.User.Id)) {

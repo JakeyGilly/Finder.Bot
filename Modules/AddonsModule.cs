@@ -1,18 +1,19 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Finder.Bot.Repositories;
 using Finder.Bot.Repositories.Bot;
 
 namespace Finder.Bot.Modules {
     [Group("addons", "Command For Managing Addons")]
     public class AddonsModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly AddonsRepository addonsRepository;
-        public AddonsModule(AddonsRepository _addonsRepository) {
-            addonsRepository = _addonsRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public AddonsModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
 
         [SlashCommand("list", "Lists the installed addons", runMode: RunMode.Async)]
         public async Task GetAddons() {
-            var value = await addonsRepository.GetAddonsModelAsync(Context.Guild.Id);
+            var value = await _unitOfWork.Addons.GetAsync(Context.Guild.Id);
             var embed = new EmbedBuilder {
                 Title = "Addon list",
                 Footer = new EmbedFooterBuilder {
@@ -37,12 +38,12 @@ namespace Finder.Bot.Modules {
                 await RespondAsync("Error: Addon not found");
                 return;
             }
-            if (await addonsRepository.AddonEnabled(Context.Guild.Id, addon)) {
+            if (await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, addon)) {
                 await RespondAsync("Error: Addon already installed");
                 return;
             }
-            await addonsRepository.AddAddonAsync(Context.Guild.Id, addon, "true");
-            await addonsRepository.SaveAsync();
+            await _unitOfWork.Addons.AddAddonAsync(Context.Guild.Id, addon, "true");
+            await _unitOfWork.SaveChangesAsync();
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Addon Installed",
                 Fields = new List<EmbedFieldBuilder> {
@@ -63,12 +64,12 @@ namespace Finder.Bot.Modules {
                 await RespondAsync("Error: Addon not found");
                 return;
             }
-            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, addon)) {
+            if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, addon)) {
                 await RespondAsync("Error: Addon not installed");
                 return;
             }
-            await addonsRepository.RemoveAddonAsync(Context.Guild.Id, addon);
-            await addonsRepository.SaveAsync();
+            await _unitOfWork.Addons.RemoveAddonAsync(Context.Guild.Id, addon);
+            await _unitOfWork.SaveChangesAsync();
             await RespondAsync(embed: new EmbedBuilder {
                 Title = "Addon Uninstalled",
                 Fields = new List<EmbedFieldBuilder> {

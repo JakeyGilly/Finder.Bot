@@ -1,15 +1,16 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Finder.Bot.Repositories;
 using Finder.Bot.Repositories.Bot;
 using Pathoschild.NaturalTimeParser.Parser;
 using System.Text;
 
 namespace Finder.Bot.Modules {
     public class CountdownModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly CountdownRepository countdownRepository;
-        public CountdownModule(CountdownRepository _countdownRepository) {
-            countdownRepository = _countdownRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public CountdownModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         [SlashCommand("countdown", "Countdown to a specific date or time", runMode: RunMode.Async)]
         public async Task CountdownCommand(string datetime, IMentionable? ping = null) {
@@ -45,19 +46,19 @@ namespace Finder.Bot.Modules {
             if (ping != null) {
                 switch(ping) {
                     case SocketRole role:
-                        await countdownRepository.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), null, role.Id);
+                        await _unitOfWork.Countdown.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), null, role.Id);
                         break;
                     case SocketGuildUser user:
-                        await countdownRepository.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), user.Id, null);
+                        await _unitOfWork.Countdown.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), user.Id, null);
                         break;
                     default:
                         await RespondAsync("Invalid mention");
                         break;
                 }
             } else {
-                await countdownRepository.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), null, null);
+                await _unitOfWork.Countdown.AddCountdownAsync(messages.Id, Context.Channel.Id, Context.Guild.Id, date.ToUniversalTime(), null, null);
             }
-            await countdownRepository.SaveAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public static string HumanizeTime(TimeSpan time) {

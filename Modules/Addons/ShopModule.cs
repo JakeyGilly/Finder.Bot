@@ -1,24 +1,22 @@
 using Discord;
 using Discord.Interactions;
 using Finder.Bot.Models;
+using Finder.Bot.Models.Data.Bot;
+using Finder.Bot.Repositories;
 using Finder.Bot.Repositories.Bot;
 using Newtonsoft.Json;
 
 namespace Finder.Bot.Modules.Addons {
     [Group("shop", "The shop commands to buy items.")]
     public class ShopModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly ItemInvRepository itemsRepository;
-        private readonly EconomyRepository economyRepository;
-        private readonly AddonsRepository addonsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
-        public ShopModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository, AddonsRepository _addonsRepository) {
-            itemsRepository = _itemsRepository;
-            economyRepository = _economyRepository;
-            addonsRepository = _addonsRepository;
+        public ShopModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         [SlashCommand("buy", "Buy an item from the shop.")]
         public async Task BuyCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
-            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+            if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Economy")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
@@ -41,14 +39,19 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync("This item is not buyable.");
                 return;
             }
-            if ((await economyRepository.GetEconomyModelAsync(Context.Guild.Id, Context.User.Id)).Money < (itemToBuy.BuyPrice * amount)) {
+            var economy = await _unitOfWork.Economy.FindAsync(Context.Guild.Id, Context.User.Id) ?? new EconomyModel {
+                GuildId = (long)Context.Guild.Id,
+                UserId = (long)Context.User.Id,
+                Money = 0,
+                Bank = 0
+            };
+            if (economy.Money < itemToBuy.BuyPrice * amount) {
                 await RespondAsync("You do not have enough money to buy this item.");
                 return;
             }
-            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -(itemToBuy.BuyPrice * amount), 0);
-            await itemsRepository.AddItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
-            await economyRepository.SaveAsync();
-            await itemsRepository.SaveAsync();
+            await _unitOfWork.Economy.SubtractEconomyAsync(Context.Guild.Id, Context.User.Id, itemToBuy.BuyPrice * amount, 0);
+            await _unitOfWork.ItemInv.AddItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
+            await _unitOfWork.SaveChangesAsync();
             string amountstr = amount == 0 ? amount.ToString() : "an";
             await RespondAsync(embed: new EmbedBuilder {
                 Title = $"You have purchased {amountstr} item!",
@@ -63,7 +66,7 @@ namespace Finder.Bot.Modules.Addons {
         
         [SlashCommand("sell", "Sell an item to the shop.")]
         public async Task SellCommand([Autocomplete(typeof(InvAutocompleteHandler))] string item, int amount = 1) {
-            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+            if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Economy")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
@@ -86,14 +89,13 @@ namespace Finder.Bot.Modules.Addons {
                 await RespondAsync("This item is not sellable.");
                 return;
             }
-            if (!await itemsRepository.ItemExistsAsync(Context.Guild.Id, Context.User.Id, itemId)) {
+            if (!await _unitOfWork.ItemInv.ItemExistsAsync(Context.Guild.Id, Context.User.Id, itemId)) {
                 await RespondAsync("You do not have this item.");
                 return;
             }
-            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, (itemToSell.SellPrice * amount), 0);
-            await itemsRepository.RemoveItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
-            await economyRepository.SaveAsync();
-            await itemsRepository.SaveAsync();
+            await _unitOfWork.Economy.AddEconomyAsync(Context.Guild.Id, Context.User.Id, itemToSell.SellPrice * amount, 0);
+            await _unitOfWork.ItemInv.RemoveItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
+            await _unitOfWork.SaveChangesAsync();
             string amountstr = amount == 0 ? amount.ToString() : "an";
             await RespondAsync(embed: new EmbedBuilder {
                 Title = $"You have sold {amountstr} item!",
@@ -108,7 +110,7 @@ namespace Finder.Bot.Modules.Addons {
 
         [SlashCommand("info", "Displays item info in the shop")]
         public async Task InfoCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string itemStr) {
-            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+            if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Economy")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
@@ -161,15 +163,13 @@ namespace Finder.Bot.Modules.Addons {
     }
 
     public class InventoryModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly ItemInvRepository itemsRepository;
-        private readonly AddonsRepository addonsRepository;
-        public InventoryModule(ItemInvRepository _itemsRepository, AddonsRepository _addonsRepository) {
-            itemsRepository = _itemsRepository;
-            addonsRepository = _addonsRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public InventoryModule(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         [SlashCommand("inventory", "View your inventory.")]
         public async Task InventoryCommand() {
-            if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Economy")) {
+            if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Economy")) {
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Economy",
                     Description = "This addon is disabled on this server.",
@@ -182,7 +182,7 @@ namespace Finder.Bot.Modules.Addons {
                 }.Build());
                 return;
             }
-            var items = await itemsRepository.GetItemsModelAsync((long)Context.Guild.Id, (long)Context.User.Id);
+            var items = await _unitOfWork.ItemInv.FindAsync((long)Context.Guild.Id, (long)Context.User.Id);
             if (items == null || items.ItemIds.Count == 0) {
                 await RespondAsync("You do not have any items.");
                 return;
@@ -219,18 +219,16 @@ namespace Finder.Bot.Modules.Addons {
     }
     
     public class InvAutocompleteHandler : AutocompleteHandler {
-        private readonly AddonsRepository addonsRepository;
-        private readonly ItemInvRepository itemsRepository;
-        public InvAutocompleteHandler(AddonsRepository _addonsRepository, ItemInvRepository _itemsRepository) {
-            addonsRepository = _addonsRepository;
-            itemsRepository = _itemsRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        public InvAutocompleteHandler(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
         }
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
-            if (!await addonsRepository.AddonEnabled(context.Guild.Id, "Economy")) {
+            if (!await _unitOfWork.Addons.AddonEnabled(context.Guild.Id, "Economy")) {
                 return AutocompletionResult.FromError(InteractionCommandError.Exception, "Economy is disabled on this server.");
             }
             IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
-            var items = await itemsRepository.GetItemsModelAsync((long)context.Guild.Id, (long)context.User.Id);
+            var items = await _unitOfWork.ItemInv.FindAsync((long)context.Guild.Id, (long)context.User.Id);
             if (items == null || items.ItemIds.Count == 0) {
                 return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "You do not have any items.");
             }

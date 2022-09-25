@@ -2,22 +2,20 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Finder.Bot.Models.Data.Bot;
-using Finder.Bot.Repositories.Bot;
+using Finder.Bot.Repositories;
 
 namespace Finder.Bot.Modules.Addons {
     public class TicketingModule {
         [Group("tickets", "Command For Managing Tickets")]
         public class TicketsModule : InteractionModuleBase<ShardedInteractionContext> {
-            ulong _closeConfirmId;
-            private readonly TicketsRepository ticketsRepository;
-            private readonly AddonsRepository addonsRepository;
-            public TicketsModule(TicketsRepository _ticketsRepository, AddonsRepository _addonsRepository) {
-                ticketsRepository = _ticketsRepository;
-                addonsRepository = _addonsRepository;
+            ulong closeConfirmId;
+            private readonly IUnitOfWork _unitOfWork;
+            public TicketsModule(IUnitOfWork unitOfWork) {
+                _unitOfWork = unitOfWork;
             }
             [SlashCommand("create", "Creates a ticket", runMode: RunMode.Async)]
             public async Task CreateTicket(string? name = null) {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -68,13 +66,13 @@ namespace Finder.Bot.Modules.Addons {
                         }
                     }
                 }.Build());
-                await ticketsRepository.AddTicketAsync(Context.Guild.Id, supportChannel.Id, message.Id, new List<long?> { (long)Context.User.Id }, name, new List<long>());
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.AddTicketAsync(Context.Guild.Id, supportChannel.Id, message.Id, new List<long?> { (long)Context.User.Id }, name, new List<long>());
+                await _unitOfWork.SaveChangesAsync();
                 await RespondAsync(embed: new EmbedBuilder {
                     Title = "Ticket Created",
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder {
-                            Name = string.Format("Opened a new ticket:"),
+                            Name = "Opened a new ticket:",
                             Value = supportChannel.Mention
                         }
                     }
@@ -83,7 +81,7 @@ namespace Finder.Bot.Modules.Addons {
 
             [SlashCommand("close", "Closes a ticket", runMode: RunMode.Async)]
             public async Task CloseTicket() {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -96,8 +94,8 @@ namespace Finder.Bot.Modules.Addons {
                     }.Build());
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
-                if (ticket.IntroMessageId == null
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
+                if (ticket?.IntroMessageId == null 
                     || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
@@ -108,13 +106,13 @@ namespace Finder.Bot.Modules.Addons {
                 }
                 await RespondAsync("Ticket Closed");
                 await ((SocketGuildChannel)Context.Channel).DeleteAsync();
-                await ticketsRepository.RemoveTicketAsync(Context.Guild.Id, Context.Channel.Id);
-                await ticketsRepository.SaveAsync();
+                _unitOfWork.Tickets.Remove(ticket);
+                await _unitOfWork.SaveChangesAsync();
             }
 
             [SlashCommand("claim", "Claims a ticket", runMode: RunMode.Async)]
             public async Task ClaimTicket() {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -131,8 +129,8 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync("You do not have permission to claim a ticket.", ephemeral: true);
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
-                if (ticket.IntroMessageId == null
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
+                if (ticket?.IntroMessageId == null
                     || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
@@ -150,8 +148,8 @@ namespace Finder.Bot.Modules.Addons {
                     viewChannel: PermValue.Allow,
                     useApplicationCommands: PermValue.Allow
                 ));
-                await ticketsRepository.AddTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.AddTicketClaimedUserIdAsync(Context.Channel.Id, Context.User.Id);
+                await _unitOfWork.SaveChangesAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = "Ticket Claimed",
                     Fields = new List<EmbedFieldBuilder> {
@@ -167,7 +165,7 @@ namespace Finder.Bot.Modules.Addons {
 
             [SlashCommand("unclaim", "Unclaims a ticket", runMode: RunMode.Async)]
             public async Task UnclaimTicket() {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -180,8 +178,8 @@ namespace Finder.Bot.Modules.Addons {
                     }.Build());
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
-                if (ticket.IntroMessageId == null ||
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
+                if (ticket?.IntroMessageId == null ||
                     await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
@@ -191,8 +189,8 @@ namespace Finder.Bot.Modules.Addons {
                     return;
                 }
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(Context.User);
-                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.RemoveTicketClaimedUserIdAsync(Context.Channel.Id, Context.User.Id);
+                await _unitOfWork.SaveChangesAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = "Ticket Unclaimed",
                     Fields = new List<EmbedFieldBuilder> {
@@ -207,7 +205,7 @@ namespace Finder.Bot.Modules.Addons {
 
             [SlashCommand("adduser", "Adds a user to a ticket", runMode: RunMode.Async)]
             public async Task AddUserToTicket(IUser user) {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -220,8 +218,8 @@ namespace Finder.Bot.Modules.Addons {
                     }.Build());
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
-                if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
+                if (ticket?.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -233,8 +231,8 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync("This user is already a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await ticketsRepository.AddTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.AddTicketUserIdAsync(Context.Channel.Id, user.Id);
+                await _unitOfWork.SaveChangesAsync();
                 await ((SocketGuildChannel)Context.Channel).AddPermissionOverwriteAsync(user, new OverwritePermissions(
                     addReactions: PermValue.Allow,
                     attachFiles: PermValue.Allow,
@@ -258,7 +256,7 @@ namespace Finder.Bot.Modules.Addons {
 
             [SlashCommand("removeuser", "Removes a user from a ticket", runMode: RunMode.Async)]
             public async Task RemoveUserFromTicket(IUser user) {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -271,7 +269,7 @@ namespace Finder.Bot.Modules.Addons {
                     }.Build());
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
                 if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
@@ -284,9 +282,9 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync("This user is not a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
-                await ticketsRepository.RemoveTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.RemoveTicketClaimedUserIdAsync(Context.Channel.Id, user.Id);
+                await _unitOfWork.Tickets.RemoveTicketUserIdAsync(Context.Channel.Id, user.Id);
+                await _unitOfWork.SaveChangesAsync();
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(user);
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = "User Removed",
@@ -302,7 +300,7 @@ namespace Finder.Bot.Modules.Addons {
 
             [SlashCommand("leave", "Leaves a ticket", runMode: RunMode.Async)]
             public async Task LeaveTicket() {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     await RespondAsync(embed: new EmbedBuilder {
                         Title = "Ticketing",
                         Description = "This addon is disabled on this server.",
@@ -316,7 +314,7 @@ namespace Finder.Bot.Modules.Addons {
                     }.Build());
                     return;
                 }
-                var ticket = await ticketsRepository.GetTicketsModelAsync(Context.Guild.Id, Context.Channel.Id);
+                var ticket = await _unitOfWork.Tickets.GetAsync(Context.Channel.Id);
                 if (ticket.IntroMessageId == null || await Context.Channel.GetMessageAsync((ulong)ticket.IntroMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
@@ -325,9 +323,9 @@ namespace Finder.Bot.Modules.Addons {
                     await RespondAsync("You are not a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
-                await ticketsRepository.RemoveTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
-                await ticketsRepository.SaveAsync();
+                await _unitOfWork.Tickets.RemoveTicketClaimedUserIdAsync(Context.Channel.Id, Context.User.Id);
+                await _unitOfWork.Tickets.RemoveTicketUserIdAsync(Context.Channel.Id, Context.User.Id);
+                await _unitOfWork.SaveChangesAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder {
                     Title = "User Removed",
                     Fields = new List<EmbedFieldBuilder> {
@@ -342,27 +340,23 @@ namespace Finder.Bot.Modules.Addons {
             }
 
             public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
-                if (!await addonsRepository.AddonEnabled(Context.Guild.Id, "Ticketing")) {
+                if (!await _unitOfWork.Addons.AddonEnabled(Context.Guild.Id, "Ticketing")) {
                     return;
                 }
-                SocketUserMessage message = messageComponent.Message;
-                SocketGuildChannel channel = (SocketGuildChannel)message.Channel;
-                SocketGuild guild = channel.Guild;
-                SocketGuildUser user = (SocketGuildUser)messageComponent.User;
-                TicketsModel ticket = await ticketsRepository.GetTicketsModelAsync(guild.Id, channel.Id);
-                if (message.Id == _closeConfirmId) {
+                TicketsModel ticket = await _unitOfWork.Tickets.GetAsync(((SocketGuildChannel)messageComponent.Message.Channel).Id);
+                if (messageComponent.Message.Id == closeConfirmId) {
                     switch(messageComponent.Data.CustomId) {
                         case "close-yes":
                             await messageComponent.RespondAsync("Ticket Closed");
-                            await ((SocketGuildChannel)message.Channel).DeleteAsync();
-                            await ticketsRepository.RemoveTicketAsync(channel.Guild.Id, channel.Id);
-                            await ticketsRepository.SaveAsync();
+                            await ((SocketGuildChannel)messageComponent.Message.Channel).DeleteAsync();
+                            _unitOfWork.Tickets.Remove(ticket);
+                            await _unitOfWork.SaveChangesAsync();
                             break;
                         case "close-no":
                             await messageComponent.RespondAsync("You have cancelled closing this ticket.");
                             break;
                     }
-                } else if ((long)message.Id == ticket.IntroMessageId) {
+                } else if ((long)messageComponent.Message.Id == ticket.IntroMessageId) {
                     switch(messageComponent.Data.CustomId) {
                         case "close":
                             await messageComponent.RespondAsync(embed: new EmbedBuilder {
@@ -378,18 +372,18 @@ namespace Finder.Bot.Modules.Addons {
                                 .WithButton("Yes", "close-yes")
                                 .WithButton("No", "close-no")
                                 .Build());
-                            _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
+                            closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
                             return;
-                        case "claim" when !user.GuildPermissions.Administrator:
+                        case "claim" when !((SocketGuildUser)messageComponent.User).GuildPermissions.Administrator:
                             await messageComponent.RespondAsync("You do not have permission to claim a ticket.", ephemeral: true);
                             return;
                         case "claim":
-                            var claimedUsers = await ticketsRepository.GetTicketsModelAsync(guild.Id, channel.Id);
-                            if (claimedUsers.ClaimedUserId.Contains((long)user.Id)) {
+                            var claimedUsers = await _unitOfWork.Tickets.GetAsync(((SocketGuildChannel)messageComponent.Message.Channel).Id);
+                            if (claimedUsers.ClaimedUserId.Contains((long)((SocketGuildUser)messageComponent.User).Id)) {
                                 await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
                                 return;
                             }
-                            await channel.AddPermissionOverwriteAsync(user, new OverwritePermissions(
+                            await ((SocketGuildChannel)messageComponent.Message.Channel).AddPermissionOverwriteAsync((SocketGuildUser)messageComponent.User, new OverwritePermissions(
                                 addReactions: PermValue.Allow,
                                 attachFiles: PermValue.Allow,
                                 embedLinks: PermValue.Allow,
@@ -398,14 +392,14 @@ namespace Finder.Bot.Modules.Addons {
                                 viewChannel: PermValue.Allow,
                                 useApplicationCommands: PermValue.Allow
                             ));
-                            await ticketsRepository.AddTicketClaimedUserIdAsync(channel.Guild.Id, channel.Id, user.Id);
-                            await ticketsRepository.SaveAsync();
-                            await message.Channel.SendMessageAsync(embed: new EmbedBuilder {
+                            await _unitOfWork.Tickets.AddTicketClaimedUserIdAsync(((SocketGuildChannel)messageComponent.Message.Channel).Id, ((SocketGuildUser)messageComponent.User).Id);
+                            await _unitOfWork.SaveChangesAsync();
+                            await messageComponent.Message.Channel.SendMessageAsync(embed: new EmbedBuilder {
                                 Title = "Ticket Claimed",
                                 Fields = new List<EmbedFieldBuilder> {
                                     new EmbedFieldBuilder {
                                         Name = "Claimed By",
-                                        Value = user.Username
+                                        Value = ((SocketGuildUser)messageComponent.User).Username
                                     }
                                 },
                                 Color = Color.Green
